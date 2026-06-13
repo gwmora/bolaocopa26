@@ -59,6 +59,13 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}input[type
     z-index: 25;
     left: 0;
 }
+
+/* Barra de rolagem customizada */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #1a472a; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2d6b3f; }
+#tabelao { scroll-behavior: smooth; }
 </style>
 </head><body><div class="bn"><h1>⚽ VII BOLÃO DA COPA DO MUNDO 2026</h1><h2>EUA / México / Canadá</h2></div><div class="tabs"><button class="tb" onclick="ST('regras')">📜 REGRAS</button><button class="tb" onclick="ST('gabarito')">📋 GABARITO</button><button class="tb" onclick="ST('tabelao')">📊 TABELÃO</button><button class="tb a" onclick="ST('placar')">🏆 PLACAR</button><button class="tb" onclick="ST('palpites')">🔍 PALPITES</button></div><div id="regras" class="tc"><div class="regras"><h2 style="color:#1a472a;margin:16px 0 10px">REGULAMENTO DO VII BOLÃO DA COPA – EDIÇÃO EUA/MÉXICO/CANADÁ 2026</h2>
 <h3 style="color:#1a472a;margin:14px 0 6px">1- Como participar:</h3>
@@ -268,7 +275,7 @@ GR.forEach(([gn])=>{
   }
 });
 thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
-const worst4 = thirds.length>=5 ? thirds.slice(-4).map(t=>t.n) : [];
+const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];
 const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);
 
 // Classification points
@@ -334,7 +341,7 @@ return {name, total: f1+cl+f2+bn, f1, cl, f2, bn};
 }
 
 let LR=[];
-function buildGabSt(gab){let h='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Top 3 por Grupo e Piores Terceiros</h3><table class="tg" style="width:100%;margin-bottom:15px"><tr><th>Grupo</th><th>1\u00ba Colocado</th><th>2\u00ba Colocado</th><th>3\u00ba Colocado</th></tr>';let thirds=[];GR.forEach(([gn])=>{const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});}}});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4=thirds.length>=5?thirds.slice(-4).map(t=>t.n):[];GR.forEach(([gn])=>{let g1='-',g2='-',g3='-',g3c='';const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(worst4.includes(g3)){g3c='background:#ffebee;color:#c62828;font-weight:700';}else if(thirds.some(t=>t.n===g3)){g3c='background:#e8f5e9;color:#2e7d32;font-weight:700';}}}h+='<tr><td style="color:#1a472a;font-weight:700;text-align:center">Grupo '+gn+'</td><td style="text-align:center">'+g1+'</td><td style="text-align:center">'+g2+'</td><td style="text-align:center;'+g3c+'">'+g3+'</td></tr>';});h+='</table><p style="font-size:0.8em;color:#666">* Os 4 piores terceiros colocados s\u00e3o hachurados em vermelho e n\u00e3o se classificam. Os 8 melhores ficam em verde.</p></div>';document.getElementById('gg_st').innerHTML=h;} 
+function buildGabSt(gab){let h='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Top 3 por Grupo e Piores Terceiros</h3><table class="tg" style="width:100%;margin-bottom:15px"><tr><th>Grupo</th><th>1\u00ba Colocado</th><th>2\u00ba Colocado</th><th>3\u00ba Colocado</th></tr>';let thirds=[];GR.forEach(([gn])=>{const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});}}});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4=thirds.length>8?thirds.slice(8).map(t=>t.n):[];GR.forEach(([gn])=>{let g1='-',g2='-',g3='-',g3c='';const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(worst4.includes(g3)){g3c='background:#ffebee;color:#c62828;font-weight:700';}else if(thirds.some(t=>t.n===g3)){g3c='background:#e8f5e9;color:#2e7d32;font-weight:700';}}}h+='<tr><td style="color:#1a472a;font-weight:700;text-align:center">Grupo '+gn+'</td><td style="text-align:center">'+g1+'</td><td style="text-align:center">'+g2+'</td><td style="text-align:center;'+g3c+'">'+g3+'</td></tr>';});h+='</table><p style="font-size:0.8em;color:#666">* Os 4 piores terceiros colocados s\u00e3o hachurados em vermelho e n\u00e3o se classificam. Os 8 melhores ficam em verde.</p></div>';document.getElementById('gg_st').innerHTML=h;} 
 function limparGabarito() {
     if(!confirm("Deseja limpar as simulações? Os jogos já realizados (10 e 11) serão mantidos intactos.")) return;
     GM.forEach(g => {
@@ -370,26 +377,45 @@ function autoFillMataMata(gab) {
     let classificados = {};
     GR.forEach(([gn]) => {
         const st = calcSt(gn, gab);
-        if (st.length >= 2 && (st[0].pts > 0 || st[1].pts > 0)) {
+        if (st.length >= 2) {
             classificados['1º' + gn] = st[0].n;
             classificados['2º' + gn] = st[1].n;
         }
     });
+    
+    let thirds = [];
+    GR.forEach(([gn]) => {
+        const st = calcSt(gn, gab);
+        if (st.length >= 3) {
+            thirds.push({gn:gn, n:st[2].n, pts:st[2].pts, sd:st[2].sd, gp:st[2].gp});
+        }
+    });
+    thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
+    let best8 = thirds.slice(0, 8).map(t => t.n);
+
     const chaves32 = {
-        73: ['2ºA', '2ºB'], 74: ['1ºE', ''], 75: ['1ºF', '2ºC'], 76: ['1ºC', '2ºF'],
-        77: ['1ºI', ''], 78: ['2ºE', '2ºI'], 79: ['1ºA', ''], 80: ['1ºL', ''],
-        81: ['1ºD', ''], 82: ['1ºG', ''], 83: ['2ºK', '2ºL'], 84: ['1ºH', '2ºJ'],
-        85: ['1ºB', ''], 86: ['1ºJ', '2ºH'], 87: ['1ºK', ''], 88: ['2ºD', '2ºG']
+        73: ['2ºA', '2ºB'], 74: ['1ºE', '3º'], 75: ['1ºF', '2ºC'], 76: ['1ºC', '2ºF'],
+        77: ['1ºI', '3º'], 78: ['2ºE', '2ºI'], 79: ['1ºA', '3º'], 80: ['1ºL', '3º'],
+        81: ['1ºD', '3º'], 82: ['1ºG', '3º'], 83: ['2ºK', '2ºL'], 84: ['1ºH', '2ºJ'],
+        85: ['1ºB', '3º'], 86: ['1ºJ', '2ºH'], 87: ['1ºK', '3º'], 88: ['2ºD', '2ºG']
     };
+    
+    let t3Index = 0;
     Object.keys(chaves32).forEach(id => {
         const sel1 = document.getElementById('mm_t1_' + id);
         const sel2 = document.getElementById('mm_t2_' + id);
-        if (sel1 && !sel1.disabled && chaves32[id][0] && classificados[chaves32[id][0]]) {
-            sel1.value = classificados[chaves32[id][0]];
-        }
-        if (sel2 && !sel2.disabled && chaves32[id][1] && classificados[chaves32[id][1]]) {
-            sel2.value = classificados[chaves32[id][1]];
-        }
+        
+        let val1 = chaves32[id][0];
+        let val2 = chaves32[id][1];
+        
+        if (val1 === '3º' && best8[t3Index]) { val1 = best8[t3Index++]; }
+        else if (val1 && classificados[val1]) { val1 = classificados[val1]; }
+        
+        if (val2 === '3º' && best8[t3Index]) { val2 = best8[t3Index++]; }
+        else if (val2 && classificados[val2]) { val2 = classificados[val2]; }
+
+        if (sel1 && !sel1.disabled && val1 && val1.length > 3) sel1.value = val1;
+        if (sel2 && !sel2.disabled && val2 && val2.length > 3) sel2.value = val2;
     });
 }
 function RC(){const gab=GV();LR=PN.map(n=>CP(n,gab));LR.sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'pt'));buildTab(gab);buildPl(gab);SP();buildGabSt(gab);autoFillMataMata(gab);}
@@ -406,12 +432,12 @@ GR.forEach(([gn])=>{
   }
 });
 thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
-const worst4 = thirds.length>=5 ? thirds.slice(-4).map(t=>t.n) : [];
+const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];
 const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);
 
 const c0=pc2[0]===g1&&g1!=='-'?'ex':(g1!=='-'&&(pc2[0]===g2||(pc2[0]===g3&&top8.includes(g3)))?'wg':'');
 const c1=pc2[1]===g2&&g2!=='-'?'ex':(g2!=='-'&&(pc2[1]===g1||(pc2[1]===g3&&top8.includes(g3)))?'wg':'');
 const c2=(pc2[2]===g3&&g3!=='-'&&top8.includes(g3))?'ex':(g3!=='-'&&top8.includes(g3)&&(pc2[2]===g1||pc2[2]===g2)?'wg':'');
-h+='<tr><td>'+b[0]+'</td><td>'+(b[1]||'-')+'</td><td>'+(b[2]||'-')+'</td><td class="'+(b[3]>0?'ok':'no')+'">'+(b[3]>0?'+'+b[3]:'-')+'</td></tr>';});h+='</table></div>';document.getElementById('pd').innerHTML=h;}
+h+='<tr><td style="font-weight:bold">Gr '+gn+'</td><td class="'+c0+'">'+(pc2[0]||'-')+'</td><td class="'+c1+'">'+(pc2[1]||'-')+'</td><td class="'+c2+'">'+(pc2[2]||'-')+'</td><td>'+g1+'</td><td>'+g2+'</td><td>'+g3+'</td><td class="'+(gpts>0?'ok':'no')+'">'+(gpts>0?'+'+gpts:'-')+'</td></tr>';});h+='</table></div>';document.getElementById('pd').innerHTML=h;}
 BG();const sel=document.getElementById('psel');PN.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});RC();
 </script></body></html>
