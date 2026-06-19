@@ -140,7 +140,7 @@ function BG(){let h='',cg='';
 let saved={};try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
 GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}
 let xQ='',xR='',vQ='',vR='';
-const HC = {10:[2,0], 11:[2,1], 17:[1,1], 18:[1,1], 24:[1,1], 25:[0,1], 31:[4,1], 32:[2,0], 38:[7,1], 39:[1,0], 45:[2,2], 46:[5,1], 52:[2,2], 53:[1,1], 59:[0,0], 60:[1,1], 66:[3,1], 67:[1,4], 74:[3,0], 75:[3,1], 82:[1,1], 83:[1,3], 90:[4,2], 91:[1,0]};
+const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 24:[1,1], 25:[0,1], 31:[4,1], 32:[2,0], 38:[7,1], 39:[1,0], 45:[2,2], 46:[5,1], 52:[2,2], 53:[1,1], 59:[0,0], 60:[1,1], 66:[3,1], 67:[1,4], 74:[3,0], 75:[3,1], 82:[1,1], 83:[1,3], 90:[4,2], 91:[1,0]};
 if(HC[r]){
 vQ=' value=\"'+HC[r][0]+'\"';vR=' value=\"'+HC[r][1]+'\"';xQ=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';xR=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';
 }else if(saved[r]){
@@ -218,22 +218,29 @@ RC();
 
 }
 function unlockGabarito(){
-GM.forEach(g=>{
-const r=g[0];if(r===10 || r===11)return;
-const q=document.getElementById('q'+r);const rv=document.getElementById('r'+r);
-if(q&&rv){q.readOnly=false;q.style.background='#f8f8f0';q.style.color='#1a472a';rv.readOnly=false;rv.style.background='#f8f8f0';rv.style.color='#1a472a';}
-});
-['cam','vic','art','ga','atq','def','tg'].forEach(b=>{
-const el=document.getElementById('g_'+b);
-if(el){el.readOnly=false;el.style.background='#fff';el.style.fontWeight='normal';el.style.color='#333';}
-});
-let saved={};try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
-Object.keys(saved).forEach(k=>{if(k!=='10' && k!=='11')saved[k][2]='unlocked';});
-localStorage.setItem('bolao_gabarito',JSON.stringify(saved));
-let savedBonus={};try{savedBonus=JSON.parse(localStorage.getItem('bolao_bonus')||'{}');}catch(e){}
-Object.keys(savedBonus).forEach(k=>{savedBonus[k].status='unlocked';});
-localStorage.setItem('bolao_bonus',JSON.stringify(savedBonus));
-
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 31, 32, 38, 39, 45, 46, 52, 53, 59, 60, 66, 67, 74, 75, 82, 83, 90, 91];
+    GM.forEach(g=>{
+        const r=g[0];
+        if(HC.includes(r)) return;
+        const q=document.getElementById('q'+r);
+        const rv=document.getElementById('r'+r);
+        if(q&&rv){
+            q.readOnly=false; q.style.background='#f8f8f0'; q.style.color='#1a472a';
+            rv.readOnly=false; rv.style.background='#f8f8f0'; rv.style.color='#1a472a';
+        }
+    });
+    ['cam','vic','art','ga','atq','def','tg'].forEach(b=>{
+        const el=document.getElementById('g_'+b);
+        if(el){el.readOnly=false;el.style.background='#fff';el.style.fontWeight='normal';el.style.color='#333';}
+    });
+    let saved={}; try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
+    Object.keys(saved).forEach(k=>{
+        if(!HC.includes(parseInt(k))) saved[k][2]='unlocked';
+    });
+    localStorage.setItem('bolao_gabarito',JSON.stringify(saved));
+    let savedBonus={}; try{savedBonus=JSON.parse(localStorage.getItem('bolao_bonus')||'{}');}catch(e){}
+    Object.keys(savedBonus).forEach(k=>{savedBonus[k].status='unlocked';});
+    localStorage.setItem('bolao_bonus',JSON.stringify(savedBonus));
 }
 
 function SG(pq,pr,gq,gr){if(gq===''||gr===''||pq===''||pr===''||gq==null||gr==null||pq==null||pr==null)return 0;let a=+pq,b=+pr,c=+gq,d=+gr;if(isNaN(a)||isNaN(b)||isNaN(c)||isNaN(d))return 0;if(a===c&&b===d)return S.ex;if(c>d){if(a>b)return a===c?S.rw:S.rs;return 0;}if(c<d){if(a<b)return b===d?S.rw:S.rs;return 0;}return a===b?S.rs:0;}
@@ -254,7 +261,7 @@ return o;}
 function IV(id){return(document.getElementById(id).value||'').trim();}
 function calcSt(gn,gab){const teams=GT[gn]||[],rows=GGM[gn]||[];const st={};teams.forEach(t=>{st[t]={pts:0,gp:0,gc:0,sd:0,n:t};});rows.forEach(r=>{const gs=gab.g[r]||['',''];if(gs[0]===''||gs[1]==='')return;const q=+gs[0],rv=+gs[1];if(isNaN(q)||isNaN(rv))return;const game=GM.find(g=>g[0]===r);if(!game)return;const t1=game[3],t2=game[4];if(!st[t1]||!st[t2])return;st[t1].gp+=q;st[t1].gc+=rv;st[t2].gp+=rv;st[t2].gc+=q;if(q>rv)st[t1].pts+=3;else if(q<rv)st[t2].pts+=3;else{st[t1].pts++;st[t2].pts++;}st[t1].sd=st[t1].gp-st[t1].gc;st[t2].sd=st[t2].gp-st[t2].gc;});return Object.values(st).sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));}
 function gF(gn,gab){return(GGM[gn]||[]).every(r=>{const gs=gab.g[r]||['',''];return gs[0]!==''&&gs[1]!=='';});}
-function eq(a,b){return a&&b&&a.toString().trim().toLowerCase()===b.toString().trim().toLowerCase();}
+function norm(s){return s?s.toString().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase():"";}function eq(a,b){return norm(a)===norm(b);}
 function CP(name,gab){
 const pd=P[name];
 let f1=0,cl=0,f2=0,bn=0;
@@ -262,63 +269,34 @@ let f1=0,cl=0,f2=0,bn=0;
 // 1st Phase Points
 GM.forEach(g=>{const r=g[0],gs=gab.g[r]||['',''],pp=pd.p[r]||['',''];f1+=SG(pp[0],pp[1],gs[0],gs[1]);});
 
-// Get Top 8 Thirds
-let thirds=[];
-GR.forEach(([gn])=>{
-  const st=calcSt(gn,gab);
-  if(st.length>=3){
-    const pts=st.reduce((sum,t)=>sum+t.pts,0);
-    if(pts>0){
-      thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});
-    }
-  }
-});
-thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
-const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];
-const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);
-
-// Classification points
-GR.forEach(([gn])=>{
-  if(!gF(gn,gab)) return;
-  const st=calcSt(gn,gab);
-  if(st.length<3) return;
-  const g1=st[0].n, g2=st[1].n, g3=st[2].n, pc=pd.gc[gn]||['','',''];
-  
-  // 1st Place
-  if(pc[0]===g1) cl+=S.ge; else if(pc[0]===g2 || (pc[0]===g3 && top8.includes(g3))) cl+=S.gw;
-  // 2nd Place
-  if(pc[1]===g2) cl+=S.ge; else if(pc[1]===g1 || (pc[1]===g3 && top8.includes(g3))) cl+=S.gw;
-  // 3rd Place - only award points if the picked team is among the top 8 thirds or 1st/2nd
-  if(top8.includes(g3) || g1===pc[2] || g2===pc[2]){
-     if(pc[2]===g3) cl+=S.ge; else if(pc[2]===g1 || pc[2]===g2) cl+=S.gw;
-  }
-});
-
-// Mata-Mata Points
-const mmRules = {
-  f32: {ids: [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88], val: 10, pval: 12},
-  oitavas: {ids: [89,90,91,92,93,94,95,96], val: 15, pval: 14},
-  quartas: {ids: [97,98,99,100], val: 20, pval: 16},
-  semis: {ids: [101,102], val: 25, pval: 18},
-  terceiro: {ids: [103], val: 20, pval: 18},
-  final: {ids: [104], val: 35, pval: 20}
-};
-
+// Mata-mata points with phase-wide tracking
 Object.values(mmRules).forEach(rule => {
+  let realTeamsInPhase = [];
+  rule.ids.forEach(id => {
+    let gs = gab.mm ? gab.mm[id] : null;
+    if(gs) {
+      if(gs[0] && gs[0] !== '') realTeamsInPhase.push(gs[0]);
+      if(gs[1] && gs[1] !== '') realTeamsInPhase.push(gs[1]);
+    }
+  });
+
   rule.ids.forEach(id => {
     let gs = gab.mm ? gab.mm[id] : null;
     let pp = pd.mm ? pd.mm[id] : null;
-    if(gs && pp && gs[0]!=='' && gs[1]!=='') {
-       let t1_ok = false, t2_ok = false;
-       if(pp[0] === gs[0]) { f2 += rule.val; t1_ok = true; }
-       else if(pp[0] === gs[1] && id !== 103) { f2 += (rule.val/2); }
-       
-       if(pp[1] === gs[1]) { f2 += rule.val; t2_ok = true; }
-       else if(pp[1] === gs[0] && id !== 103) { f2 += (rule.val/2); }
-       
-       // Exact match bonus
-       if(t1_ok && t2_ok && gs[2]!=='' && gs[3]!=='') {
-           if(pp[2]===gs[2] && pp[3]===gs[3]) {
+    if(pp) {
+       // Team 1
+       if(pp[0] && pp[0] !== '') {
+          if(gs && gs[0] === pp[0]) f2 += rule.val;
+          else if(realTeamsInPhase.includes(pp[0])) f2 += (rule.val / 2);
+       }
+       // Team 2
+       if(pp[1] && pp[1] !== '') {
+          if(gs && gs[1] === pp[1]) f2 += rule.val;
+          else if(realTeamsInPhase.includes(pp[1])) f2 += (rule.val / 2);
+       }
+       // Exact score bonus
+       if(gs && gs[0] === pp[0] && gs[1] === pp[1] && gs[2] !== '' && gs[3] !== '') {
+           if(pp[2] !== '' && pp[3] !== '' && parseInt(pp[2]) === parseInt(gs[2]) && parseInt(pp[3]) === parseInt(gs[3])) {
               f2 += rule.pval;
            }
        }
@@ -326,7 +304,6 @@ Object.values(mmRules).forEach(rule => {
   });
 });
 
-// Bonus Points
 const gb=gab.b, pb=pd.b;
 if(eq(pb.cam,gb.cam)) bn+=S.cam; else if(gb.cam&&gb.vic&&eq(pb.cam,gb.vic)) bn+=S.fp;
 if(eq(pb.vic,gb.vic)) bn+=S.vic; else if(gb.cam&&gb.vic&&eq(pb.vic,gb.cam)) bn+=S.fp;
@@ -338,12 +315,11 @@ if(pb.tg&&gb.tg&&pb.tg===gb.tg) bn+=S.btg;
 
 return {name, total: f1+cl+f2+bn, f1, cl, f2, bn};
 }
-
 let LR=[];
 function buildGabSt(gab){let h='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Top 3 por Grupo e Piores Terceiros</h3><table class="tg" style="width:100%;margin-bottom:15px"><tr><th>Grupo</th><th>1\u00ba Colocado</th><th>2\u00ba Colocado</th><th>3\u00ba Colocado</th></tr>';let thirds=[];GR.forEach(([gn])=>{const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});}}});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4=thirds.length>8?thirds.slice(8).map(t=>t.n):[];GR.forEach(([gn])=>{let g1='-',g2='-',g3='-',g3c='';const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(worst4.includes(g3)){g3c='background:#ffebee;color:#c62828;font-weight:700';}else if(thirds.some(t=>t.n===g3)){g3c='background:#e8f5e9;color:#2e7d32;font-weight:700';}}}h+='<tr><td style="color:#1a472a;font-weight:700;text-align:center">Grupo '+gn+'</td><td style="text-align:center">'+g1+'</td><td style="text-align:center">'+g2+'</td><td style="text-align:center;'+g3c+'">'+g3+'</td></tr>';});h+='</table><p style="font-size:0.8em;color:#666">* Os 4 piores terceiros colocados s\u00e3o hachurados em vermelho e n\u00e3o se classificam. Os 8 melhores ficam em verde.</p></div>';document.getElementById('gg_st').innerHTML=h;} 
 function limparGabarito() {
     if(!confirm("Deseja limpar as simulações? Os jogos já realizados serão mantidos intactos.")) return;
-    const HC = [10, 11, 17, 18, 24, 25, 31, 32, 38, 39, 45, 46, 52, 53, 59, 60, 66, 67, 74, 75, 82, 83, 90, 91];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 31, 32, 38, 39, 45, 46, 52, 53, 59, 60, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g => {
         const r = g[0];
         if (!HC.includes(r)) {
@@ -437,7 +413,7 @@ function autoFillMataMata(gab) {
 }
 function RC(){const gab=GV();LR=PN.map(n=>CP(n,gab));LR.sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'pt'));buildTab(gab);buildPl(gab);SP();buildGabSt(gab);autoFillMataMata(gab);}
 function buildTab(gab){const pts={};LR.forEach(r=>{pts[r.name]=r.total;});let h='<table class="tg"><thead><tr><th class="rh" style="position:sticky;top:0;z-index:20;background:#1a472a;color:#d4af37">Pontos \u2192</th>';PN.forEach(n=>{h+='<th class="hn" style="position:sticky;top:0;z-index:15">'+n+'</th>';});h+='</tr><tr><th class="rh" style="position:sticky;top:132px;z-index:20;background:#f0f0e8;color:#1a472a;border-right:2px solid #1a472a">Total</th>';PN.forEach(n=>{h+='<td class="hp" style="position:sticky;top:132px;z-index:15">'+(pts[n]||0)+'</td>';});h+='</tr></thead><tbody>';let cg='';TO.forEach(([label,grow])=>{const game=GM.find(g=>g[0]===grow);const grp=game?game[1]:'';if(grp!==cg){cg=grp;h+='<tr><td class="gn" colspan="'+(PN.length+1)+'">'+grp+'</td></tr>';}const gs=gab.g[grow]||['',''];h+='<tr><td class="rh">'+label+'</td>';PN.forEach(n=>{const pp=P[n].p[grow]||['',''];const pq=pp[0]!=null&&pp[0]!==''?pp[0]:'-';const prr=pp[1]!=null&&pp[1]!==''?pp[1]:'-';h+='<td class="'+SC(pp[0],pp[1],gs[0],gs[1])+'">'+pq+'x'+prr+'</td>';});h+='</tr>';});h+='</tbody></table>';document.getElementById('tbd').innerHTML=h;}
-function buildPl(gab){const gb=gab.b;const gabSt={};GR.forEach(([gn])=>{if(gF(gn,gab)){const st=calcSt(gn,gab);gabSt[gn]=st.length>=3?[st[0].n,st[1].n,st[2].n]:null;}});let h='<table class="pl"><thead><tr><th rowspan="2">Pos</th><th rowspan="2">Jogador</th><th rowspan="2">Total</th><th rowspan="2">1\u00aaFase</th><th rowspan="2">2ª Fase</th><th rowspan="2">B\u00f4nus</th><th rowspan="2">Campe\u00e3o</th><th rowspan="2">Vice</th><th rowspan="2">Artilheiro</th><th rowspan="2">Gols</th><th rowspan="2">M.Ataque</th><th rowspan="2">M.Defesa</th><th rowspan="2">Tot.Gols</th>';GR.forEach(([gn])=>{h+='<th colspan="3" class="gh">Gr '+gn+'</th>';});h+='</tr><tr>';GR.forEach(()=>{h+='<th>1\u00ba</th><th>2\u00ba</th><th>3\u00ba</th>';});h+='</tr></thead><tbody>';let prev=-1,pos=0;LR.forEach((r,i)=>{if(r.total!==prev){pos=i+1;prev=r.total;}const pc=pos===1?'p1':pos===2?'p2':pos===3?'p3':'';const pd=P[r.name],pb=pd.b;const camC=eq(pb.cam,gb.cam)?'ex':(gb.cam&&gb.vic&&eq(pb.cam,gb.vic)?'wg':'');const vicC=eq(pb.vic,gb.vic)?'ex':(gb.cam&&gb.vic&&eq(pb.vic,gb.cam)?'wg':'');h+='<tr><td class="'+pc+'">'+pos+'\u00ba</td><td>'+r.name+'</td><td style="font-weight:700;color:#1a472a">'+r.total+'</td><td>'+r.f1+'</td><td>'+(r.cl+r.f2)+'</td><td>'+r.bn+'</td><td class="'+camC+'">'+(pb.cam||'-')+'</td><td class="'+vicC+'">'+(pb.vic||'-')+'</td><td class="'+(eq(pb.art,gb.art)?'ex':'')+'">'+(pb.art||'-')+'</td><td class="'+((pb.ga&&gb.ga&&pb.ga===gb.ga)?'ex':'')+'">'+(pb.ga||'-')+'</td><td class="'+(eq(pb.atq,gb.atq)?'ex':'')+'">'+(pb.atq||'-')+'</td><td class="'+(eq(pb.def,gb.def)?'ex':'')+'">'+(pb.def||'-')+'</td><td class="'+((pb.tg&&gb.tg&&pb.tg===gb.tg)?'ex':'')+'">'+(pb.tg||'-')+'</td>';GR.forEach(([gn])=>{const gc=pd.gc[gn]||['','',''];const gs=gabSt[gn];const c1=gs&&gc[0]===gs[0]?'ex':(gs&&(gc[0]===gs[1]||gc[0]===gs[2])?'wg':'');const c2=gs&&gc[1]===gs[1]?'ex':(gs&&(gc[1]===gs[0]||gc[1]===gs[2])?'wg':'');const c3=gs&&gc[2]===gs[2]?'ex':(gs&&(gc[2]===gs[0]||gc[2]===gs[1])?'wg':'');h+='<td class="'+c1+'">'+(gc[0]||'-')+'</td><td class="'+c2+'">'+(gc[1]||'-')+'</td><td class="'+c3+'">'+(gc[2]||'-')+'</td>';});h+='</tr>';});h+='</tbody></table>';document.getElementById('pld').innerHTML=h;}
+function buildPl(gab){const gb=gab.b;let thirds=[];GR.forEach(([gn])=>{  const st=calcSt(gn,gab);  if(st.length>=3){    const pts=st.reduce((sum,t)=>sum+t.pts,0);    if(pts>0){      thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});    }  }});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);const gabSt={};GR.forEach(([gn])=>{  if(gF(gn,gab)){    const st=calcSt(gn,gab);    gabSt[gn]=st.length>=3?[st[0].n,st[1].n,st[2].n]:null;  }});let h='<table class="pl"><thead><tr><th rowspan="2">Pos</th><th rowspan="2">Jogador</th><th rowspan="2">Total</th><th rowspan="2">1\u00aaFase</th><th rowspan="2">2ª Fase</th><th rowspan="2">B\u00f4nus</th><th rowspan="2">Campe\u00e3o</th><th rowspan="2">Vice</th><th rowspan="2">Artilheiro</th><th rowspan="2">Gols</th><th rowspan="2">M.Ataque</th><th rowspan="2">M.Defesa</th><th rowspan="2">Tot.Gols</th>';GR.forEach(([gn])=>{h+='<th colspan="3" class="gh">Gr '+gn+'</th>';});h+='</tr><tr>';GR.forEach(()=>{h+='<th>1\u00ba</th><th>2\u00ba</th><th>3\u00ba</th>';});h+='</tr></thead><tbody>';let prev=-1,pos=0;LR.forEach((r,i)=>{  if(r.total!==prev){pos=i+1;prev=r.total;}  const pc=pos===1?'p1':pos===2?'p2':pos===3?'p3':'';  const pd=P[r.name],pb=pd.b;  const camC=eq(pb.cam,gb.cam)?'ex':(gb.cam&&gb.vic&&eq(pb.cam,gb.vic)?'wg':'');  const vicC=eq(pb.vic,gb.vic)?'ex':(gb.cam&&gb.vic&&eq(pb.vic,gb.cam)?'wg':'');  h+='<tr><td class="'+pc+'">'+pos+'\u00ba</td><td>'+r.name+'</td><td style="font-weight:700;color:#1a472a">'+r.total+'</td><td>'+r.f1+'</td><td>'+(r.cl+r.f2)+'</td><td>'+r.bn+'</td><td class="'+camC+'">'+(pb.cam||'-')+'</td><td class="'+vicC+'">'+(pb.vic||'-')+'</td><td class="'+(eq(pb.art,gb.art)?'ex':'')+'">'+(pb.art||'-')+'</td><td class="'+((pb.ga&&gb.ga&&pb.ga===gb.ga)?'ex':'')+'">'+(pb.ga||'-')+'</td><td class="'+(eq(pb.atq,gb.atq)?'ex':'')+'">'+(pb.atq||'-')+'</td><td class="'+(eq(pb.def,gb.def)?'ex':'')+'">'+(pb.def||'-')+'</td><td class="'+((pb.tg&&gb.tg&&pb.tg===gb.tg)?'ex':'')+'">'+(pb.tg||'-')+'</td>';    GR.forEach(([gn])=>{    const gc=pd.gc[gn]||['','',''];    const gs=gabSt[gn];    let c1='', c2='', c3='';    if(gs) {      c1 = gc[0]===gs[0]?'ex':(gc[0]===gs[1]||(gc[0]===gs[2]&&top8.includes(gs[2]))?'wg':'');      c2 = gc[1]===gs[1]?'ex':(gc[1]===gs[0]||(gc[1]===gs[2]&&top8.includes(gs[2]))?'wg':'');      c3 = (gc[2]===gs[2]&&top8.includes(gs[2]))?'ex':(gc[2]===gs[0]||gc[2]===gs[1]?'wg':'');    }    h+='<td class="'+c1+'">'+(gc[0]||'-')+'</td><td class="'+c2+'">'+(gc[1]||'-')+'</td><td class="'+c3+'">'+(gc[2]||'-')+'</td>';  });  h+='</tr>';});h+='</tbody></table>';document.getElementById('pld').innerHTML=h;}
 function SP(){const name=document.getElementById('psel').value;if(!name){document.getElementById('psu').innerHTML='';document.getElementById('pd').innerHTML='';return;}const gab=GV(),pd=P[name],res=CP(name,gab);document.getElementById('psu').innerHTML='<div class="sc"><div class="v">'+res.total+'</div><div class="l">TOTAL</div></div><div class="sc"><div class="v">'+res.f1+'</div><div class="l">1\u00aa FASE</div></div><div class="sc"><div class="v">'+(res.cl+res.f2)+'</div><div class="l">2ª FASE</div></div><div class="sc"><div class="v">'+res.bn+'</div><div class="l">B\u00d4NUS</div></div>';
 let h='<h3 class="st">\u26bd Fase de Grupos \u2014 <span style="color:#1a472a">Gabarito</span> \u00d7 <span style="color:#888">Palpite</span></h3>';let cg='';GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}const gs=gab.g[r]||['',''],pp=pd.p[r]||['',''];const pts=SG(pp[0],pp[1],gs[0],gs[1]);const pc=pts>=12?'e':pts>=9?'w':pts>=7?'r':'z';const gq=gs[0]!==''?gs[0]:'-',grv=gs[1]!==''?gs[1]:'-';const pq=pp[0]!=null&&pp[0]!==''?pp[0]:'-',prr=pp[1]!=null&&pp[1]!==''?pp[1]:'-';h+='<div class="pg"><span class="d">'+dt+'</span><span class="t">'+t1+'</span><span class="gb">'+gq+'</span><span class="x">\u00d7</span><span class="gb">'+grv+'</span><span class="t t2">'+t2+'</span><span class="pal">'+pq+'</span><span class="x">\u00d7</span><span class="pal">'+prr+'</span><span class="pt '+pc+'">'+(pts>0?'+'+pts:'-')+'</span></div>';});
 h+='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Classifica\u00e7\u00e3o nos Grupos</h3><table><tr><th>Grupo</th><th>1\u00ba Palp.</th><th>2\u00ba Palp.</th><th>3\u00ba Palp.</th><th>1\u00ba Gab.</th><th>2\u00ba Gab.</th><th>3\u00ba Gab.</th><th>Pts</th></tr>';GR.forEach(([gn])=>{const pc2=pd.gc[gn]||['','',''];let gpts=0,g1='-',g2='-',g3='-';if(gF(gn,gab)){const st=calcSt(gn,gab);if(st.length>=3){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(pc2[0]===g1)gpts+=S.ge;else if(pc2[0]===g2||pc2[0]===g3)gpts+=S.gw;if(pc2[1]===g2)gpts+=S.ge;else if(pc2[1]===g1||pc2[1]===g3)gpts+=S.gw;if(pc2[2]===g3)gpts+=S.ge;else if(pc2[2]===g1||pc2[2]===g2)gpts+=S.gw;}}
@@ -452,9 +428,9 @@ thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
 const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];
 const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);
 
-const c0=pc2[0]===g1&&g1!=='-'?'ex':(g1!=='-'&&(pc2[0]===g2||(pc2[0]===g3&&top8.includes(g3)))?'wg':'');
-const c1=pc2[1]===g2&&g2!=='-'?'ex':(g2!=='-'&&(pc2[1]===g1||(pc2[1]===g3&&top8.includes(g3)))?'wg':'');
-const c2=(pc2[2]===g3&&g3!=='-'&&top8.includes(g3))?'ex':(g3!=='-'&&top8.includes(g3)&&(pc2[2]===g1||pc2[2]===g2)?'wg':'');
+const c0=eq(pc2[0],g1)&&g1!=='-'?'ex':(g1!=='-'&&(eq(pc2[0],g2)||(eq(pc2[0],g3)&&top8.some(t=>eq(t,g3))))?'wg':'');
+const c1=eq(pc2[1],g2)&&g2!=='-'?'ex':(g2!=='-'&&(eq(pc2[1],g1)||(eq(pc2[1],g3)&&top8.some(t=>eq(t,g3))))?'wg':'');
+const c2=(eq(pc2[2],g3)&&g3!=='-'&&top8.some(t=>eq(t,g3)))?'ex':(g3!=='-'&&top8.some(t=>eq(t,g3))&&(eq(pc2[2],g1)||eq(pc2[2],g2))?'wg':'');
 h+='<tr><td style="font-weight:bold">Gr '+gn+'</td><td class="'+c0+'">'+(pc2[0]||'-')+'</td><td class="'+c1+'">'+(pc2[1]||'-')+'</td><td class="'+c2+'">'+(pc2[2]||'-')+'</td><td>'+g1+'</td><td>'+g2+'</td><td>'+g3+'</td><td class="'+(gpts>0?'ok':'no')+'">'+(gpts>0?'+'+gpts:'-')+'</td></tr>';});h+='</table></div>';document.getElementById('pd').innerHTML=h;}
 BG();const sel=document.getElementById('psel');PN.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});RC();
 </script></body></html>
