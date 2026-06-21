@@ -39,23 +39,22 @@
 .regras{max-width:900px;margin:0 auto;line-height:1.6;font-size:.92em}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}input[type=number]{-moz-appearance:textfield}
 @media(max-width:700px){.gr{grid-template-columns:70px 1fr 38px 12px 38px 1fr;font-size:.76em}.pg{font-size:.7em;grid-template-columns:70px 1fr 30px 10px 30px 1fr 30px 10px 30px 36px}.tb{padding:6px 10px;font-size:.76em}}
-#tabelao {
-    max-height: 80vh;
-    overflow-y: auto;
-    overflow-x: auto;
+#tbd {
+    max-height: 75vh;
+    overflow: auto;
 }
-#tabelao .tg th {
+#tbd .tg th {
     position: sticky;
     top: 0;
     z-index: 20;
     background: #1a472a;
 }
-#tabelao .tg .gn, #tabelao .tg .rh {
+#tbd .tg .gn, #tbd .tg .rh {
     position: sticky;
     left: 0;
     z-index: 15;
 }
-#tabelao .tg th:first-child, #tabelao .tg th:nth-child(2) {
+#tbd .tg th:first-child, #tbd .tg th:nth-child(2) {
     z-index: 25;
     left: 0;
 }
@@ -136,6 +135,15 @@ const mmRules = {
 
 const S={ex:12,rw:9,rs:7,ge:10,gw:5,cam:50,vic:25,fp:17.5,ba:40,bg:15,bat:35,bd:35,btg:60};
 function ST(id){document.querySelectorAll('.tc').forEach(t=>t.classList.remove('a'));document.querySelectorAll('.tb').forEach(b=>b.classList.remove('a'));document.getElementById(id).classList.add('a');document.querySelector('[onclick*="'+id+'"]').classList.add('a');}
+function irParaPalpites(nome){
+  ST('palpites');
+  const sel = document.getElementById('psel');
+  if(sel){
+    sel.value = nome;
+    SP();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+}
 function BG(){let h='',cg='';
 let saved={};try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
 GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}
@@ -491,7 +499,7 @@ function buildPl(gab){
         }
     }
 
-    h+='<tr><td class="'+pc+'">'+pos+'\u00ba</td><td>'+r.name+arrowHtml+'</td><td style="font-weight:700;color:#1a472a">'+r.total+'</td><td>'+r.f1+'</td><td>'+(r.cl+r.f2)+'</td><td>'+r.bn+'</td><td class="'+camC+'">'+(pb.cam||'-')+'</td><td class="'+vicC+'">'+(pb.vic||'-')+'</td><td class="'+(eq(pb.art,gb.art)?'ex':'')+'">'+(pb.art||'-')+'</td><td class="'+((pb.ga&&gb.ga&&pb.ga===gb.ga)?'ex':'')+'">'+(pb.ga||'-')+'</td><td class="'+(eq(pb.atq,gb.atq)?'ex':'')+'">'+(pb.atq||'-')+'</td><td class="'+(eq(pb.def,gb.def)?'ex':'')+'">'+(pb.def||'-')+'</td><td class="'+((pb.tg&&gb.tg&&pb.tg===gb.tg)?'ex':'')+'">'+(pb.tg||'-')+'</td>';
+    h+='<tr><td class="'+pc+'">'+pos+'\u00ba</td><td><a href="#" style="color:inherit;text-decoration:none;cursor:pointer" onclick="irParaPalpites(\''+r.name.replace(/'/g, '\\\'')+'\');return false;" title="Ver palpites">'+r.name+'</a>'+arrowHtml+'</td><td style="font-weight:700;color:#1a472a">'+r.total+'</td><td>'+r.f1+'</td><td>'+(r.cl+r.f2)+'</td><td>'+r.bn+'</td><td class="'+camC+'">'+(pb.cam||'-')+'</td><td class="'+vicC+'">'+(pb.vic||'-')+'</td><td class="'+(eq(pb.art,gb.art)?'ex':'')+'">'+(pb.art||'-')+'</td><td class="'+((pb.ga&&gb.ga&&pb.ga===gb.ga)?'ex':'')+'">'+(pb.ga||'-')+'</td><td class="'+(eq(pb.atq,gb.atq)?'ex':'')+'">'+(pb.atq||'-')+'</td><td class="'+(eq(pb.def,gb.def)?'ex':'')+'">'+(pb.def||'-')+'</td><td class="'+((pb.tg&&gb.tg&&pb.tg===gb.tg)?'ex':'')+'">'+(pb.tg||'-')+'</td>';
     
     GR.forEach(([gn])=>{
       const gc=pd.gc[gn]||['','',''];
@@ -509,23 +517,154 @@ function buildPl(gab){
   h+='</tbody></table>';
   document.getElementById('pld').innerHTML=h;
 }
-function SP(){const name=document.getElementById('psel').value;if(!name){document.getElementById('psu').innerHTML='';document.getElementById('pd').innerHTML='';return;}const gab=GV(),pd=P[name],res=CP(name,gab);document.getElementById('psu').innerHTML='<div class="sc"><div class="v">'+res.total+'</div><div class="l">TOTAL</div></div><div class="sc"><div class="v">'+res.f1+'</div><div class="l">1\u00aa FASE</div></div><div class="sc"><div class="v">'+(res.cl+res.f2)+'</div><div class="l">2ª FASE</div></div><div class="sc"><div class="v">'+res.bn+'</div><div class="l">B\u00d4NUS</div></div>';
-let h='<h3 class="st">\u26bd Fase de Grupos \u2014 <span style="color:#1a472a">Gabarito</span> \u00d7 <span style="color:#888">Palpite</span></h3>';let cg='';GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}const gs=gab.g[r]||['',''],pp=pd.p[r]||['',''];const pts=SG(pp[0],pp[1],gs[0],gs[1]);const pc=pts>=12?'e':pts>=9?'w':pts>=7?'r':'z';const gq=gs[0]!==''?gs[0]:'-',grv=gs[1]!==''?gs[1]:'-';const pq=pp[0]!=null&&pp[0]!==''?pp[0]:'-',prr=pp[1]!=null&&pp[1]!==''?pp[1]:'-';h+='<div class="pg"><span class="d">'+dt+'</span><span class="t">'+t1+'</span><span class="gb">'+gq+'</span><span class="x">\u00d7</span><span class="gb">'+grv+'</span><span class="t t2">'+t2+'</span><span class="pal">'+pq+'</span><span class="x">\u00d7</span><span class="pal">'+prr+'</span><span class="pt '+pc+'">'+(pts>0?'+'+pts:'-')+'</span></div>';});
-h+='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Classifica\u00e7\u00e3o nos Grupos</h3><table><tr><th>Grupo</th><th>1\u00ba Palp.</th><th>2\u00ba Palp.</th><th>3\u00ba Palp.</th><th>1\u00ba Gab.</th><th>2\u00ba Gab.</th><th>3\u00ba Gab.</th><th>Pts</th></tr>';GR.forEach(([gn])=>{const pc2=pd.gc[gn]||['','',''];let gpts=0,g1='-',g2='-',g3='-';if(gF(gn,gab)){const st=calcSt(gn,gab);if(st.length>=3){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(pc2[0]===g1)gpts+=S.ge;else if(pc2[0]===g2||pc2[0]===g3)gpts+=S.gw;if(pc2[1]===g2)gpts+=S.ge;else if(pc2[1]===g1||pc2[1]===g3)gpts+=S.gw;if(pc2[2]===g3)gpts+=S.ge;else if(pc2[2]===g1||pc2[2]===g2)gpts+=S.gw;}}
-let thirds=[];
-GR.forEach(([gn])=>{
-  const st=calcSt(gn,gab);
-  if(st.length>=3 && st.reduce((sum,t)=>sum+t.pts,0)>0){
-    thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});
-  }
-});
-thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
-const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];
-const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);
+function SP(){
+    const name=document.getElementById('psel').value;
+    if(!name){document.getElementById('psu').innerHTML='';document.getElementById('pd').innerHTML='';return;}
+    const gab=GV(),pd=P[name],res=CP(name,gab);
+    
+    document.getElementById('psu').innerHTML='<div class="sc"><div class="v">'+res.total+'</div><div class="l">TOTAL</div></div><div class="sc"><div class="v">'+res.f1+'</div><div class="l">1\u00aa FASE</div></div><div class="sc"><div class="v">'+(res.cl+res.f2)+'</div><div class="l">2ª FASE</div></div><div class="sc"><div class="v">'+res.bn+'</div><div class="l">B\u00d4NUS</div></div>';
+    
+    let h='<h3 class="st">\u26bd Fase de Grupos \u2014 <span style="color:#1a472a">Gabarito</span> \u00d7 <span style="color:#888">Palpite</span></h3>';
+    let cg='';
+    GM.forEach(g=>{
+        const[r,gr,dt,t1,t2]=g;
+        if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}
+        const gs=gab.g[r]||['',''],pp=pd.p[r]||['',''];
+        const pts=SG(pp[0],pp[1],gs[0],gs[1]);
+        const pc=pts>=12?'e':pts>=9?'w':pts>=7?'r':'z';
+        const gq=gs[0]!==''?gs[0]:'-',grv=gs[1]!==''?gs[1]:'-';
+        const pq=pp[0]!=null&&pp[0]!==''?pp[0]:'-',prr=pp[1]!=null&&pp[1]!==''?pp[1]:'-';
+        h+='<div class="pg"><span class="d">'+dt+'</span><span class="t">'+t1+'</span><span class="gb">'+gq+'</span><span class="x">\u00d7</span><span class="gb">'+grv+'</span><span class="t t2">'+t2+'</span><span class="pal">'+pq+'</span><span class="x">\u00d7</span><span class="pal">'+prr+'</span><span class="pt '+pc+'">'+(pts>0?'+'+pts:'-')+'</span></div>';
+    });
+    
+    h+='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Classifica\u00e7\u00e3o nos Grupos</h3><table><tr><th>Grupo</th><th>1\u00ba Palp.</th><th>2\u00ba Palp.</th><th>3\u00ba Palp.</th><th>1\u00ba Gab.</th><th>2\u00ba Gab.</th><th>3\u00ba Gab.</th><th>Pts</th></tr>';
+    
+    GR.forEach(([gn])=>{
+        const pc2=pd.gc[gn]||['','',''];
+        let gpts=0,g1='-',g2='-',g3='-';
+        if(gF(gn,gab)){
+            const st=calcSt(gn,gab);
+            if(st.length>=3){
+                g1=st[0].n;g2=st[1].n;g3=st[2].n;
+                if(pc2[0]===g1)gpts+=S.ge;else if(pc2[0]===g2||pc2[0]===g3)gpts+=S.gw;
+                if(pc2[1]===g2)gpts+=S.ge;else if(pc2[1]===g1||pc2[1]===g3)gpts+=S.gw;
+                if(pc2[2]===g3)gpts+=S.ge;else if(pc2[2]===g1||pc2[2]===g2)gpts+=S.gw;
+            }
+        }
+        let thirds=[];
+        GR.forEach(([gn2])=>{
+            const st2=calcSt(gn2,gab);
+            if(st2.length>=3 && st2.reduce((sum,t)=>sum+t.pts,0)>0){
+                thirds.push({gn:gn2,n:st2[2].n,pts:st2[2].pts,sd:st2[2].sd,gp:st2[2].gp});
+            }
+        });
+        thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
+        const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];
+        const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);
 
-const c0=eq(pc2[0],g1)&&g1!=='-'?'ex':(g1!=='-'&&(eq(pc2[0],g2)||(eq(pc2[0],g3)&&top8.some(t=>eq(t,g3))))?'wg':'');
-const c1=eq(pc2[1],g2)&&g2!=='-'?'ex':(g2!=='-'&&(eq(pc2[1],g1)||(eq(pc2[1],g3)&&top8.some(t=>eq(t,g3))))?'wg':'');
-const c2=(eq(pc2[2],g3)&&g3!=='-'&&top8.some(t=>eq(t,g3)))?'ex':(g3!=='-'&&top8.some(t=>eq(t,g3))&&(eq(pc2[2],g1)||eq(pc2[2],g2))?'wg':'');
-h+='<tr><td style="font-weight:bold">Gr '+gn+'</td><td class="'+c0+'">'+(pc2[0]||'-')+'</td><td class="'+c1+'">'+(pc2[1]||'-')+'</td><td class="'+c2+'">'+(pc2[2]||'-')+'</td><td>'+g1+'</td><td>'+g2+'</td><td>'+g3+'</td><td class="'+(gpts>0?'ok':'no')+'">'+(gpts>0?'+'+gpts:'-')+'</td></tr>';});h+='</table></div>';document.getElementById('pd').innerHTML=h;}
+        const c0=eq(pc2[0],g1)&&g1!=='-'?'ex':(g1!=='-'&&(eq(pc2[0],g2)||(eq(pc2[0],g3)&&top8.some(t=>eq(t,g3))))?'wg':'');
+        const c1=eq(pc2[1],g2)&&g2!=='-'?'ex':(g2!=='-'&&(eq(pc2[1],g1)||(eq(pc2[1],g3)&&top8.some(t=>eq(t,g3))))?'wg':'');
+        const c2=(eq(pc2[2],g3)&&g3!=='-'&&top8.some(t=>eq(t,g3)))?'ex':(g3!=='-'&&top8.some(t=>eq(t,g3))&&(eq(pc2[2],g1)||eq(pc2[2],g2))?'wg':'');
+        h+='<tr><td style="font-weight:bold">Gr '+gn+'</td><td class="'+c0+'">'+(pc2[0]||'-')+'</td><td class="'+c1+'">'+(pc2[1]||'-')+'</td><td class="'+c2+'">'+(pc2[2]||'-')+'</td><td>'+g1+'</td><td>'+g2+'</td><td>'+g3+'</td><td class="'+(gpts>0?'ok':'no')+'">'+(gpts>0?'+'+gpts:'-')+'</td></tr>';
+    });
+    h+='</table></div>';
+    
+    // --- SHOW MATA MATA ---
+    h+='<h3 class="st" style="margin-top:24px">\uD83C\uDFC6 Mata-Mata \u2014 <span style="color:#1a472a">Gabarito</span> \u00d7 <span style="color:#888">Palpite</span></h3>';
+    const mmPhases = [
+      {name: 'Fase de 32', ids: [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88], val: 10, pval: 12},
+      {name: 'Oitavas de Final', ids: [89,90,91,92,93,94,95,96], val: 15, pval: 14},
+      {name: 'Quartas de Final', ids: [97,98,99,100], val: 20, pval: 16},
+      {name: 'Semifinais', ids: [101,102], val: 25, pval: 18},
+      {name: 'Disputa de 3º Lugar', ids: [103], val: 20, pval: 18},
+      {name: 'Final', ids: [104], val: 35, pval: 20}
+    ];
+    
+    mmPhases.forEach(ph => {
+        h+='<div class="gt">'+ph.name+'</div>';
+        
+        let realTeamsInPhase = [];
+        ph.ids.forEach(id => {
+            let gs = gab.mm ? gab.mm[id] : null;
+            if(gs) {
+              if(gs[0] && gs[0] !== '') realTeamsInPhase.push(gs[0]);
+              if(gs[1] && gs[1] !== '') realTeamsInPhase.push(gs[1]);
+            }
+        });
+        
+        ph.ids.forEach(id => {
+            let pp = pd.mm ? pd.mm[id] : null;
+            if(pp) {
+                let gs = gab.mm ? gab.mm[id] : null;
+                
+                let t1p = pp[0]||'-', t2p = pp[1]||'-';
+                let qp = pp[2]||'-', rp = pp[3]||'-';
+                
+                let t1g = (gs&&gs[0])?gs[0]:'-', t2g = (gs&&gs[1])?gs[1]:'-';
+                let qg = (gs&&gs[2])?gs[2]:'-', rg = (gs&&gs[3])?gs[3]:'-';
+                
+                let pt = 0;
+                
+                if(pp[0] && pp[0] !== '') {
+                  if(gs && eq(gs[0], pp[0])) pt += ph.val;
+                  else if(realTeamsInPhase.some(t=>eq(t, pp[0]))) pt += (ph.val / 2);
+               }
+               if(pp[1] && pp[1] !== '') {
+                  if(gs && eq(gs[1], pp[1])) pt += ph.val;
+                  else if(realTeamsInPhase.some(t=>eq(t, pp[1]))) pt += (ph.val / 2);
+               }
+               if(gs && eq(gs[0], pp[0]) && eq(gs[1], pp[1]) && gs[2] !== '' && gs[3] !== '') {
+                   if(pp[2] !== '' && pp[3] !== '' && parseInt(pp[2]) === parseInt(gs[2]) && parseInt(pp[3]) === parseInt(gs[3])) {
+                      pt += ph.pval;
+                   }
+               }
+                
+               const pc=pt>=(ph.val*2)?'e':pt>0?'w':'z';
+               let p_str = (qp!=='-' || rp!=='-') ? `<span class="pal">${qp}</span><span class="x">\u00d7</span><span class="pal">${rp}</span>` : '';
+               let g_str = (qg!=='-' || rg!=='-') ? `<span class="gb">${qg}</span><span class="x">\u00d7</span><span class="gb">${rg}</span>` : '';
+               
+               h+=`<div class="pg" style="grid-template-columns: 35px 1fr 30px 10px 30px 1fr 30px 10px 30px 42px;"><span class="d" style="font-size:0.8em">J${id}</span><span class="t" style="color:#1a472a;font-weight:700">${t1g}</span>${g_str}<span class="t t2" style="color:#1a472a;font-weight:700">${t2g}</span><span class="pal" style="text-align:right">${t1p}</span>${p_str}<span class="pal" style="text-align:left">${t2p}</span><span class="pt ${pc}">${pt>0?'+'+pt:'-'}</span></div>`;
+            }
+        });
+    });
+    
+    // --- SHOW BONUS ---
+    h+='<div class="pb"><h3 class="st">\uD83C\uDF81 Bônus</h3><table><tr><th>Categoria</th><th>Palpite</th><th>Gabarito</th><th>Pts</th></tr>';
+    const pb=pd.b, gb=gab.b;
+    
+    const bnList = [
+       {k:'cam', lbl:'Campeão', val:50, gp: gb.cam, pp: pb.cam},
+       {k:'vic', lbl:'Vice-Campeão', val:25, gp: gb.vic, pp: pb.vic},
+       {k:'art', lbl:'Artilheiro', val:40, gp: gb.art, pp: pb.art},
+       {k:'ga', lbl:'Gols Artilheiro', val:15, gp: gb.ga, pp: pb.ga},
+       {k:'atq', lbl:'Melhor Ataque', val:35, gp: gb.atq, pp: pb.atq},
+       {k:'def', lbl:'Melhor Defesa', val:35, gp: gb.def, pp: pb.def},
+       {k:'tg', lbl:'Total de Gols', val:60, gp: gb.tg, pp: pb.tg}
+    ];
+    
+    bnList.forEach(b=>{
+        let pt=0;
+        let p_val = b.pp || '-';
+        let g_val = b.gp || '-';
+        
+        if(b.k==='cam') {
+           if(eq(pb.cam,gb.cam)) pt+=S.cam; else if(gb.cam&&gb.vic&&eq(pb.cam,gb.vic)) pt+=S.fp;
+        } else if(b.k==='vic') {
+           if(eq(pb.vic,gb.vic)) pt+=S.vic; else if(gb.cam&&gb.vic&&eq(pb.vic,gb.cam)) pt+=S.fp;
+        } else if(b.k==='ga' || b.k==='tg') {
+           if(b.pp&&b.gp&&b.pp===b.gp) pt+=b.val;
+        } else {
+           if(eq(b.pp, b.gp)) pt+=b.val;
+        }
+        
+        let c = pt===b.val ? 'ex' : (pt>0 ? 'wg' : '');
+        h+='<tr><td style="font-weight:bold">'+b.lbl+'</td><td class="'+c+'">'+p_val+'</td><td>'+g_val+'</td><td class="'+(pt>0?'ok':'no')+'">'+(pt>0?'+'+pt:'-')+'</td></tr>';
+    });
+    
+    h+='</table></div>';
+    
+    document.getElementById('pd').innerHTML=h;
+}
+
 BG();const sel=document.getElementById('psel');PN.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});RC();
 </script></body></html>
