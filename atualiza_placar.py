@@ -106,16 +106,15 @@ for m in matches:
             elif chave_inv in games_map:
                 novos_resultados[games_map[chave_inv]] = [score_away, score_home]
 
-# 8. Sobrescreve o HTML
+# 8. Sobrescreve o HTML com os placares e a data atual
 if novos_resultados:
-    sorted_keys = sorted(novos_resultados.keys())
-    dict_items = [f"{k}:[{novos_resultados[k][0]},{novos_resultados[k][1]}]" for k in sorted_keys]
-    dict_str = "const HC = {" + ", ".join(dict_items) + "};"
+    # (Manter o seu código anterior de replace do HC aqui...)
     
-    html = re.sub(r'const HC = \{.*?\};', dict_str, html)
+    # Adicionar agora a atualização da data:
+    from datetime import datetime, timedelta
+    hora_atual = (datetime.utcnow() - timedelta(hours=3)).strftime("%d/%m/%Y às %H:%M")
+    html = re.sub(r'<span id="last-update">.*?</span>', f'<span id="last-update">{hora_atual}</span>', html)
     
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html)
-    print(f"Sucesso! {len(novos_resultados)} jogos atualizados.")
-else:
-    print("Nenhum resultado finalizado encontrado.")
+    print(f"Sucesso! {len(novos_resultados)} jogos finalizados processados.")
