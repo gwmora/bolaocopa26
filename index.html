@@ -413,7 +413,102 @@ function autoFillMataMata(gab) {
 }
 function RC(){const gab=GV();LR=PN.map(n=>CP(n,gab));LR.sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'pt'));buildTab(gab);buildPl(gab);SP();buildGabSt(gab);autoFillMataMata(gab);}
 function buildTab(gab){const pts={};LR.forEach(r=>{pts[r.name]=r.total;});let h='<table class="tg"><thead><tr><th class="rh" style="position:sticky;top:0;z-index:20;background:#1a472a;color:#d4af37">Pontos \u2192</th>';PN.forEach(n=>{h+='<th class="hn" style="position:sticky;top:0;z-index:15">'+n+'</th>';});h+='</tr><tr><th class="rh" style="position:sticky;top:132px;z-index:20;background:#f0f0e8;color:#1a472a;border-right:2px solid #1a472a">Total</th>';PN.forEach(n=>{h+='<td class="hp" style="position:sticky;top:132px;z-index:15">'+(pts[n]||0)+'</td>';});h+='</tr></thead><tbody>';let cg='';TO.forEach(([label,grow])=>{const game=GM.find(g=>g[0]===grow);const grp=game?game[1]:'';if(grp!==cg){cg=grp;h+='<tr><td class="gn" colspan="'+(PN.length+1)+'">'+grp+'</td></tr>';}const gs=gab.g[grow]||['',''];h+='<tr><td class="rh">'+label+'</td>';PN.forEach(n=>{const pp=P[n].p[grow]||['',''];const pq=pp[0]!=null&&pp[0]!==''?pp[0]:'-';const prr=pp[1]!=null&&pp[1]!==''?pp[1]:'-';h+='<td class="'+SC(pp[0],pp[1],gs[0],gs[1])+'">'+pq+'x'+prr+'</td>';});h+='</tr>';});h+='</tbody></table>';document.getElementById('tbd').innerHTML=h;}
-function buildPl(gab){const gb=gab.b;let thirds=[];GR.forEach(([gn])=>{  const st=calcSt(gn,gab);  if(st.length>=3){    const pts=st.reduce((sum,t)=>sum+t.pts,0);    if(pts>0){      thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});    }  }});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);const gabSt={};GR.forEach(([gn])=>{  if(gF(gn,gab)){    const st=calcSt(gn,gab);    gabSt[gn]=st.length>=3?[st[0].n,st[1].n,st[2].n]:null;  }});let h='<table class="pl"><thead><tr><th rowspan="2">Pos</th><th rowspan="2">Jogador</th><th rowspan="2">Total</th><th rowspan="2">1\u00aaFase</th><th rowspan="2">2ª Fase</th><th rowspan="2">B\u00f4nus</th><th rowspan="2">Campe\u00e3o</th><th rowspan="2">Vice</th><th rowspan="2">Artilheiro</th><th rowspan="2">Gols</th><th rowspan="2">M.Ataque</th><th rowspan="2">M.Defesa</th><th rowspan="2">Tot.Gols</th>';GR.forEach(([gn])=>{h+='<th colspan="3" class="gh">Gr '+gn+'</th>';});h+='</tr><tr>';GR.forEach(()=>{h+='<th>1\u00ba</th><th>2\u00ba</th><th>3\u00ba</th>';});h+='</tr></thead><tbody>';let prev=-1,pos=0;LR.forEach((r,i)=>{  if(r.total!==prev){pos=i+1;prev=r.total;}  const pc=pos===1?'p1':pos===2?'p2':pos===3?'p3':'';  const pd=P[r.name],pb=pd.b;  const camC=eq(pb.cam,gb.cam)?'ex':(gb.cam&&gb.vic&&eq(pb.cam,gb.vic)?'wg':'');  const vicC=eq(pb.vic,gb.vic)?'ex':(gb.cam&&gb.vic&&eq(pb.vic,gb.cam)?'wg':'');  h+='<tr><td class="'+pc+'">'+pos+'\u00ba</td><td>'+r.name+'</td><td style="font-weight:700;color:#1a472a">'+r.total+'</td><td>'+r.f1+'</td><td>'+(r.cl+r.f2)+'</td><td>'+r.bn+'</td><td class="'+camC+'">'+(pb.cam||'-')+'</td><td class="'+vicC+'">'+(pb.vic||'-')+'</td><td class="'+(eq(pb.art,gb.art)?'ex':'')+'">'+(pb.art||'-')+'</td><td class="'+((pb.ga&&gb.ga&&pb.ga===gb.ga)?'ex':'')+'">'+(pb.ga||'-')+'</td><td class="'+(eq(pb.atq,gb.atq)?'ex':'')+'">'+(pb.atq||'-')+'</td><td class="'+(eq(pb.def,gb.def)?'ex':'')+'">'+(pb.def||'-')+'</td><td class="'+((pb.tg&&gb.tg&&pb.tg===gb.tg)?'ex':'')+'">'+(pb.tg||'-')+'</td>';    GR.forEach(([gn])=>{    const gc=pd.gc[gn]||['','',''];    const gs=gabSt[gn];    let c1='', c2='', c3='';    if(gs) {      c1 = gc[0]===gs[0]?'ex':(gc[0]===gs[1]||(gc[0]===gs[2]&&top8.includes(gs[2]))?'wg':'');      c2 = gc[1]===gs[1]?'ex':(gc[1]===gs[0]||(gc[1]===gs[2]&&top8.includes(gs[2]))?'wg':'');      c3 = (gc[2]===gs[2]&&top8.includes(gs[2]))?'ex':(gc[2]===gs[0]||gc[2]===gs[1]?'wg':'');    }    h+='<td class="'+c1+'">'+(gc[0]||'-')+'</td><td class="'+c2+'">'+(gc[1]||'-')+'</td><td class="'+c3+'">'+(gc[2]||'-')+'</td>';  });  h+='</tr>';});h+='</tbody></table>';document.getElementById('pld').innerHTML=h;}
+function buildPl(gab){
+  const gb=gab.b;
+  let thirds=[];
+  GR.forEach(([gn])=>{
+    const st=calcSt(gn,gab);
+    if(st.length>=3){
+      const pts=st.reduce((sum,t)=>sum+t.pts,0);
+      if(pts>0){
+        thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});
+      }
+    }
+  });
+  thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
+  const worst4 = thirds.length > 8 ? thirds.slice(8).map(t=>t.n) : [];
+  const top8 = thirds.filter(t=>!worst4.includes(t.n)).map(t=>t.n);
+  const gabSt={};
+  GR.forEach(([gn])=>{
+    if(gF(gn,gab)){
+      const st=calcSt(gn,gab);
+      gabSt[gn]=st.length>=3?[st[0].n,st[1].n,st[2].n]:null;
+    }
+  });
+
+  // --- NOVA LÓGICA DE EVOLUÇÃO DE RANKING (SETAS) ---
+  let currentCount = 0;
+  GM.forEach(g => {
+      const gs = gab.g[g[0]];
+      if (gs && gs[0] !== '' && gs[1] !== '') currentCount++;
+  });
+  
+  let currentRanks = {};
+  let tempP=-1, tempPos=0;
+  LR.forEach((r,i)=>{
+      if(r.total!==tempP){tempPos=i+1;tempP=r.total;}
+      currentRanks[r.name] = tempPos;
+  });
+  
+  // Salva no LocalStorage atrelando a quantidade de jogos finalizados
+  let history = JSON.parse(localStorage.getItem('bolao_ranking_history_v2') || '{}');
+  history[currentCount] = currentRanks;
+  localStorage.setItem('bolao_ranking_history_v2', JSON.stringify(history));
+  
+  // Busca o último ranking válido (antes de novos jogos fecharem)
+  let prevCount = currentCount - 1;
+  while(prevCount >= 0 && !history[prevCount]) {
+      prevCount--;
+  }
+  let prevRanks = history[prevCount];
+  // ----------------------------------------------------
+
+  let h='<table class="pl"><thead><tr><th rowspan="2">Pos</th><th rowspan="2">Jogador</th><th rowspan="2">Total</th><th rowspan="2">1\u00aaFase</th><th rowspan="2">2ª Fase</th><th rowspan="2">B\u00f4nus</th><th rowspan="2">Campe\u00e3o</th><th rowspan="2">Vice</th><th rowspan="2">Artilheiro</th><th rowspan="2">Gols</th><th rowspan="2">M.Ataque</th><th rowspan="2">M.Defesa</th><th rowspan="2">Tot.Gols</th>';
+  GR.forEach(([gn])=>{h+='<th colspan="3" class="gh">Gr '+gn+'</th>';});
+  h+='</tr><tr>';
+  GR.forEach(()=>{h+='<th>1\u00ba</th><th>2\u00ba</th><th>3\u00ba</th>';});
+  h+='</tr></thead><tbody>';
+  
+  let prev=-1,pos=0;
+  LR.forEach((r,i)=>{
+    if(r.total!==prev){pos=i+1;prev=r.total;}
+    const pc=pos===1?'p1':pos===2?'p2':pos===3?'p3':'';
+    const pd=P[r.name],pb=pd.b;
+    const camC=eq(pb.cam,gb.cam)?'ex':(gb.cam&&gb.vic&&eq(pb.cam,gb.vic)?'wg':'');
+    const vicC=eq(pb.vic,gb.vic)?'ex':(gb.cam&&gb.vic&&eq(pb.vic,gb.cam)?'wg':'');
+    
+    // --- RENDERIZAÇÃO DAS SETAS ---
+    let arrowHtml = '';
+    if (prevRanks && prevRanks[r.name]) {
+        let prevP = prevRanks[r.name];
+        let diff = prevP - pos;
+        if (diff > 0) {
+            arrowHtml = '<span style="color:#2e7d32; font-size:0.9em; margin-left:8px; font-weight:bold" title="Subiu ' + diff + ' posições">▲ +' + diff + '</span>';
+        } else if (diff < 0) {
+            arrowHtml = '<span style="color:#c62828; font-size:0.9em; margin-left:8px; font-weight:bold" title="Caiu ' + (-diff) + ' posições">▼ ' + (-diff) + '</span>';
+        } else {
+            arrowHtml = '<span style="color:#9e9e9e; font-size:1em; margin-left:8px; font-weight:bold" title="Manteve a posição">↔</span>';
+        }
+    }
+
+    h+='<tr><td class="'+pc+'">'+pos+'\u00ba</td><td>'+r.name+arrowHtml+'</td><td style="font-weight:700;color:#1a472a">'+r.total+'</td><td>'+r.f1+'</td><td>'+(r.cl+r.f2)+'</td><td>'+r.bn+'</td><td class="'+camC+'">'+(pb.cam||'-')+'</td><td class="'+vicC+'">'+(pb.vic||'-')+'</td><td class="'+(eq(pb.art,gb.art)?'ex':'')+'">'+(pb.art||'-')+'</td><td class="'+((pb.ga&&gb.ga&&pb.ga===gb.ga)?'ex':'')+'">'+(pb.ga||'-')+'</td><td class="'+(eq(pb.atq,gb.atq)?'ex':'')+'">'+(pb.atq||'-')+'</td><td class="'+(eq(pb.def,gb.def)?'ex':'')+'">'+(pb.def||'-')+'</td><td class="'+((pb.tg&&gb.tg&&pb.tg===gb.tg)?'ex':'')+'">'+(pb.tg||'-')+'</td>';
+    
+    GR.forEach(([gn])=>{
+      const gc=pd.gc[gn]||['','',''];
+      const gs=gabSt[gn];
+      let c1='', c2='', c3='';
+      if(gs) {
+        c1 = gc[0]===gs[0]?'ex':(gc[0]===gs[1]||(gc[0]===gs[2]&&top8.includes(gs[2]))?'wg':'');
+        c2 = gc[1]===gs[1]?'ex':(gc[1]===gs[0]||(gc[1]===gs[2]&&top8.includes(gs[2]))?'wg':'');
+        c3 = (gc[2]===gs[2]&&top8.includes(gs[2]))?'ex':(gc[2]===gs[0]||gc[2]===gs[1]?'wg':'');
+      }
+      h+='<td class="'+c1+'">'+(gc[0]||'-')+'</td><td class="'+c2+'">'+(gc[1]||'-')+'</td><td class="'+c3+'">'+(gc[2]||'-')+'</td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('pld').innerHTML=h;
+}
 function SP(){const name=document.getElementById('psel').value;if(!name){document.getElementById('psu').innerHTML='';document.getElementById('pd').innerHTML='';return;}const gab=GV(),pd=P[name],res=CP(name,gab);document.getElementById('psu').innerHTML='<div class="sc"><div class="v">'+res.total+'</div><div class="l">TOTAL</div></div><div class="sc"><div class="v">'+res.f1+'</div><div class="l">1\u00aa FASE</div></div><div class="sc"><div class="v">'+(res.cl+res.f2)+'</div><div class="l">2ª FASE</div></div><div class="sc"><div class="v">'+res.bn+'</div><div class="l">B\u00d4NUS</div></div>';
 let h='<h3 class="st">\u26bd Fase de Grupos \u2014 <span style="color:#1a472a">Gabarito</span> \u00d7 <span style="color:#888">Palpite</span></h3>';let cg='';GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}const gs=gab.g[r]||['',''],pp=pd.p[r]||['',''];const pts=SG(pp[0],pp[1],gs[0],gs[1]);const pc=pts>=12?'e':pts>=9?'w':pts>=7?'r':'z';const gq=gs[0]!==''?gs[0]:'-',grv=gs[1]!==''?gs[1]:'-';const pq=pp[0]!=null&&pp[0]!==''?pp[0]:'-',prr=pp[1]!=null&&pp[1]!==''?pp[1]:'-';h+='<div class="pg"><span class="d">'+dt+'</span><span class="t">'+t1+'</span><span class="gb">'+gq+'</span><span class="x">\u00d7</span><span class="gb">'+grv+'</span><span class="t t2">'+t2+'</span><span class="pal">'+pq+'</span><span class="x">\u00d7</span><span class="pal">'+prr+'</span><span class="pt '+pc+'">'+(pts>0?'+'+pts:'-')+'</span></div>';});
 h+='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Classifica\u00e7\u00e3o nos Grupos</h3><table><tr><th>Grupo</th><th>1\u00ba Palp.</th><th>2\u00ba Palp.</th><th>3\u00ba Palp.</th><th>1\u00ba Gab.</th><th>2\u00ba Gab.</th><th>3\u00ba Gab.</th><th>Pts</th></tr>';GR.forEach(([gn])=>{const pc2=pd.gc[gn]||['','',''];let gpts=0,g1='-',g2='-',g3='-';if(gF(gn,gab)){const st=calcSt(gn,gab);if(st.length>=3){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(pc2[0]===g1)gpts+=S.ge;else if(pc2[0]===g2||pc2[0]===g3)gpts+=S.gw;if(pc2[1]===g2)gpts+=S.ge;else if(pc2[1]===g1||pc2[1]===g3)gpts+=S.gw;if(pc2[2]===g3)gpts+=S.ge;else if(pc2[2]===g1||pc2[2]===g2)gpts+=S.gw;}}
