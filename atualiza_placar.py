@@ -82,10 +82,7 @@ for m in matches:
         score_home = m.get('score', {}).get('fullTime', {}).get('home')
         score_away = m.get('score', {}).get('fullTime', {}).get('away')
 
-# 7. Injeta os resultados que terminaram
-    for m in matches:
-        if m.get('status') == 'FINISHED':
-            home_en = m['homeTeam']['name']
+home_en = m['homeTeam']['name']
             away_en = m['awayTeam']['name']
             
             # --- CORREÇÃO MANUAL PARA ESPANHA ---
@@ -98,37 +95,14 @@ for m in matches:
             # ------------------------------------
             
             if score_home is not None and score_away is not None:
-                home_pt = norm(TEAM_MAP.get(home_en, home_en))
-                away_pt = norm(TEAM_MAP.get(away_en, away_en))
+                # Proteção extra: garante que o nome existe antes de normalizar
+                h_name = TEAM_MAP.get(home_en, home_en) or ""
+                a_name = TEAM_MAP.get(away_en, away_en) or ""
                 
-                chave = f"{home_pt}x{away_pt}"
-                chave_inv = f"{away_pt}x{home_pt}"
+                home_pt = norm(h_name)
+                away_pt = norm(a_name)
                 
-                if chave in games_map:
-                    id_jogo = games_map[chave]
-                    novos_resultados[id_jogo] = [score_home, score_away]
-                elif chave_inv in games_map:
-                    id_jogo = games_map[chave_inv]
-                    novos_resultados[id_jogo] = [score_away, score_home]
-        
-        if score_home is not None and score_away is not None:
-            home_en = m['homeTeam']['name']
-            away_en = m['awayTeam']['name']
-            
-            home_pt = norm(TEAM_MAP.get(home_en, home_en))
-            away_pt = norm(TEAM_MAP.get(away_en, away_en))
-            
-            chave = f"{home_pt}x{away_pt}"
-            chave_inv = f"{away_pt}x{home_pt}"
-            
-            if chave in games_map:
-                id_jogo = games_map[chave]
-                novos_resultados[id_jogo] = [score_home, score_away]
-            elif chave_inv in games_map:
-                id_jogo = games_map[chave_inv]
-                novos_resultados[id_jogo] = [score_away, score_home]
-
-# 8. Sobrescreve o HTML com os placares atualizados
+                # ... (o resto do seu código permanece igual a partir daqui)# 8. Sobrescreve o HTML com os placares atualizados
 if novos_resultados:
     sorted_keys = sorted(novos_resultados.keys())
     
