@@ -570,7 +570,11 @@ function SP(){
     h+='</table></div>';
     
     // --- SHOW MATA MATA ---
-    h+='<h3 class="st" style="margin-top:24px">\uD83C\uDFC6 Mata-Mata \u2014 <span style="color:#1a472a">Gabarito</span> \u00d7 <span style="color:#888">Palpite</span></h3>';
+    h+='<div class="pb"><h3 class="st" style="margin-top:24px">\uD83C\uDFC6 Mata-Mata \u2014 <span style="color:#1a472a">Gabarito Oficial</span> \u00d7 <span style="color:#888">Palpite do Apostador</span></h3>';
+    h+='<div style="overflow-x:auto;"><table class="tg" style="width:100%; white-space:nowrap; margin-bottom:15px;">';
+    h+='<thead><tr><th rowspan="2">Jogo</th><th colspan="3">Gabarito (Real)</th><th colspan="3">Palpite (Aposta)</th><th rowspan="2">Pts</th></tr>';
+    h+='<tr><th>Mandante</th><th>Placar</th><th>Visitante</th><th>Mandante</th><th>Placar</th><th>Visitante</th></tr></thead><tbody>';
+
     const mmPhases = [
       {name: 'Fase de 32', ids: [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88], val: 10, pval: 12},
       {name: 'Oitavas de Final', ids: [89,90,91,92,93,94,95,96], val: 15, pval: 14},
@@ -581,7 +585,7 @@ function SP(){
     ];
     
     mmPhases.forEach(ph => {
-        h+='<div class="gt">'+ph.name+'</div>';
+        h+='<tr><td colspan="8" class="gn" style="text-align:center">'+ph.name+'</td></tr>';
         
         let realTeamsInPhase = [];
         ph.ids.forEach(id => {
@@ -619,14 +623,24 @@ function SP(){
                    }
                }
                 
-               const pc=pt>=(ph.val*2)?'e':pt>0?'w':'z';
-               let p_str = (qp!=='-' || rp!=='-') ? `<span class="pal">${qp}</span><span class="x">\u00d7</span><span class="pal">${rp}</span>` : '';
-               let g_str = (qg!=='-' || rg!=='-') ? `<span class="gb">${qg}</span><span class="x">\u00d7</span><span class="gb">${rg}</span>` : '';
+               const c = pt>=(ph.val + ph.pval) ? 'ex' : (pt>0 ? 'wg' : '');
+               let placarGab = (qg!=='-'||rg!=='-') ? qg+' x '+rg : '- x -';
+               let placarPal = (qp!=='-'||rp!=='-') ? qp+' x '+rp : '- x -';
                
-               h+=`<div class="pg" style="grid-template-columns: 35px 1fr 30px 10px 30px 1fr 30px 10px 30px 42px;"><span class="d" style="font-size:0.8em">J${id}</span><span class="t" style="color:#1a472a;font-weight:700">${t1g}</span>${g_str}<span class="t t2" style="color:#1a472a;font-weight:700">${t2g}</span><span class="pal" style="text-align:right">${t1p}</span>${p_str}<span class="pal" style="text-align:left">${t2p}</span><span class="pt ${pc}">${pt>0?'+'+pt:'-'}</span></div>`;
+               h+='<tr>';
+               h+='<td class="rh" style="text-align:center; font-size:0.9em">J'+id+'</td>';
+               h+='<td style="color:#1a472a; font-weight:700; text-align:right">'+t1g+'</td>';
+               h+='<td style="font-weight:bold; background:#e0e0e0; color:#333; text-align:center;">'+placarGab+'</td>';
+               h+='<td style="color:#1a472a; font-weight:700; text-align:left">'+t2g+'</td>';
+               h+='<td style="color:#555; text-align:right">'+t1p+'</td>';
+               h+='<td style="background:#f5f5f0; text-align:center;">'+placarPal+'</td>';
+               h+='<td style="color:#555; text-align:left">'+t2p+'</td>';
+               h+='<td class="'+c+'" style="font-weight:bold; text-align:center;">'+(pt>0?'+'+pt:'-')+'</td>';
+               h+='</tr>';
             }
         });
     });
+    h+='</tbody></table></div></div>';
     
     // --- SHOW BONUS ---
     h+='<div class="pb"><h3 class="st">\uD83C\uDF81 Bônus</h3><table><tr><th>Categoria</th><th>Palpite</th><th>Gabarito</th><th>Pts</th></tr>';
