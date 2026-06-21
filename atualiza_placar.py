@@ -5,7 +5,7 @@ import requests
 import unicodedata
 
 # 1. Puxa a chave de segurança que você guardou no GitHub
-API_TOKEN = os.environ.get('API_TOKEN')
+API_TOKEN = os.environ.get('API_TOKEN', '').strip()
 if not API_TOKEN:
     print("API_TOKEN não encontrado.")
     exit(1)
