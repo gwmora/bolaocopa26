@@ -1,0 +1,38 @@
+name: Atualizador Automático do Bolão
+
+on:
+  schedule:
+    # Roda a cada 2 horas. Você pode ajustar esse tempo durante a Copa.
+    - cron: '0 */2 * * *' 
+  workflow_dispatch: # Cria um botão para você rodar manualmente se quiser
+
+permissions:
+  contents: write # Dá permissão para o robô salvar o arquivo HTML modificado
+
+jobs:
+  atualiza-html:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixa o repositório
+        uses: actions/checkout@v4
+
+      - name: Prepara o Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instala a biblioteca de requisições
+        run: pip install requests
+
+      - name: Roda o script de atualização
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }} # Puxa a senha do cofre
+        run: python atualiza_placar.py
+
+      - name: Salva as alterações no GitHub (Commit)
+        run: |
+          git config --global user.name 'Robô do Bolão'
+          git config --global user.email 'action@github.com'
+          git add .
+          git commit -m "⚽ Atualização automática de placares" || echo "Sem novos jogos finalizados"
+          git push
