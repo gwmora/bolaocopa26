@@ -43,7 +43,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}input[type
     max-height: 75vh;
     overflow: auto;
 }
-#tbd .tg th {
+#tbd .tg th { position: sticky; top: 0; z-index: 50; background: #1a472a; border: 1px solid #ccc; }
     position: sticky;
     top: 0;
     z-index: 20;
@@ -571,9 +571,12 @@ function SP(){
     
     // --- SHOW MATA MATA ---
     h+='<div class="pb"><h3 class="st" style="margin-top:24px">\uD83C\uDFC6 Mata-Mata \u2014 <span style="color:#1a472a">Gabarito Oficial</span> \u00d7 <span style="color:#888">Palpite do Apostador</span></h3>';
-    h+='<div style="overflow-x:auto;"><table class="tg" style="width:100%; white-space:nowrap; margin-bottom:15px;">';
-    h+='<thead><tr><th rowspan="2">Jogo</th><th colspan="3">Gabarito (Real)</th><th colspan="3">Palpite (Aposta)</th><th rowspan="2">Pts</th></tr>';
+    
+    h+='<div style="overflow-x:auto;"><table class="tg" style="width:100%; white-space:nowrap; margin-bottom:15px; table-layout: fixed;">';
+    h+='<colgroup><col style="width:40px"><col style="width:25%"><col style="width:50px"><col style="width:25%"><col style="width:25%"><col style="width:50px"><col style="width:25%"><col style="width:40px"></colgroup>';
+    h+='<thead><tr><th rowspan="2" style="width:40px">Jogo</th><th colspan="3">Gabarito (Real)</th><th colspan="3">Palpite (Aposta)</th><th rowspan="2" style="width:40px">Pts</th></tr>';
     h+='<tr><th>Mandante</th><th>Placar</th><th>Visitante</th><th>Mandante</th><th>Placar</th><th>Visitante</th></tr></thead><tbody>';
+
 
     const mmPhases = [
       {name: 'Fase de 32', ids: [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88], val: 10, pval: 12},
