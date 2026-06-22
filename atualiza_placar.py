@@ -3,27 +3,29 @@ import re
 import json
 import requests
 import unicodedata
+from datetime import datetime, timedelta
 
-# 1. Puxa a chave de segurança que você guardou no GitHub
+# 1. Puxa a chave de segurança
 API_TOKEN = os.environ.get('API_TOKEN', '').strip()
 if not API_TOKEN:
     print("API_TOKEN não encontrado.")
     exit(1)
 
-# 2. Dicionário de tradução
+# 2. Dicionário de tradução BLINDADO (Atualizado com a lista real da API)
 TEAM_MAP = {
     "Mexico": "México", "South Africa": "África do Sul", "South Korea": "Coreia do Sul",
     "Czech Republic": "Tchéquia", "Czechia": "Tchéquia", "Canada": "Canadá",
-    "Bosnia and Herzegovina": "Bósnia", "Bosnia": "Bósnia", "Qatar": "Catar",
-    "Switzerland": "Suíça", "Brazil": "Brasil", "Morocco": "Marrocos",
-    "Haiti": "Haiti", "Scotland": "Escócia", "United States": "EUA",
-    "USA": "EUA", "Paraguay": "Paraguai", "Australia": "Austrália",
-    "Turkey": "Turquia", "Germany": "Alemanha", "Curaçao": "Curaçao",
-    "Ivory Coast": "Costa do Marfim", "Cote d'Ivoire": "Costa do Marfim",
-    "Ecuador": "Equador", "Netherlands": "Holanda", "Japan": "Japão",
-    "Sweden": "Suécia", "Tunisia": "Tunísia", "Iran": "Irã",
+    "Bosnia and Herzegovina": "Bósnia", "Bosnia-Herzegovina": "Bósnia", "Bosnia": "Bósnia", # Bósnia corrigida
+    "Qatar": "Catar", "Switzerland": "Suíça", "Brazil": "Brasil", "Morocco": "Marrocos",
+    "Haiti": "Haiti", "Scotland": "Escócia", "United States": "EUA", "USA": "EUA",
+    "Paraguay": "Paraguai", "Australia": "Austrália", "Turkey": "Turquia",
+    "Germany": "Alemanha", "Curaçao": "Curaçao", "Ivory Coast": "Costa do Marfim",
+    "Cote d'Ivoire": "Costa do Marfim", "Ecuador": "Equador", "Netherlands": "Holanda",
+    "Japan": "Japão", "Sweden": "Suécia", "Tunisia": "Tunísia", 
+    "Iran": "Irã", "IR Iran": "Irã", "Islamic Republic of Iran": "Irã",
     "New Zealand": "Nova Zelândia", "Belgium": "Bélgica", "Egypt": "Egito",
-    "Spain": "Espanha", "Cape Verde": "Cabo Verde", "Saudi Arabia": "Arábia Saudita",
+    "Spain": "Espanha", "Saudi Arabia": "Arábia Saudita",
+    "Cape Verde": "Cabo Verde", "Cape Verde Islands": "Cabo Verde", # Cabo Verde corrigido
     "Uruguay": "Uruguai", "France": "França", "Senegal": "Senegal",
     "Iraq": "Iraque", "Norway": "Noruega", "Argentina": "Argentina",
     "Algeria": "Argélia", "Austria": "Áustria", "Jordan": "Jordânia",
@@ -68,7 +70,7 @@ if response.status_code != 200:
 data = response.json()
 matches = data.get('matches', [])
 
-# 6. Preserva os resultados existentes
+# 6. Preserva os resultados existentes no HTML
 novos_resultados = {}
 old_hc_match = re.search(r'const HC = (\{.*?\});', html)
 if old_hc_match:
@@ -79,25 +81,15 @@ if old_hc_match:
 # 7. Injeta os resultados que terminaram
 for m in matches:
     if m.get('status') == 'FINISHED':
-        home_en = m['homeTeam'].get('name')
-        away_en = m['awayTeam'].get('name')
-
-        # --- LINHA NOVA PARA DESCOBRIR O NOME ---
-        print(f"A API encontrou finalizado: '{home_en}' x '{away_en}'")
-        # ----------------------------------------
+        home_en = m.get('homeTeam', {}).get('name')
+        away_en = m.get('awayTeam', {}).get('name')
         
-        # --- CORREÇÃO MANUAL PARA ESPANHA ---
-        if home_en == "Spain" and away_en == "Saudi Arabia":
-            score_home = 4
-            score_away = 0
-        else:
-            score_home = m.get('score', {}).get('fullTime', {}).get('home')
-            score_away = m.get('score', {}).get('fullTime', {}).get('away')
-        # ------------------------------------
+        score_home = m.get('score', {}).get('fullTime', {}).get('home')
+        score_away = m.get('score', {}).get('fullTime', {}).get('away')
         
         if score_home is not None and score_away is not None:
-            h_name = TEAM_MAP.get(home_en, home_en)
-            a_name = TEAM_MAP.get(away_en, away_en)
+            h_name = TEAM_MAP.get(home_en, home_en) or ""
+            a_name = TEAM_MAP.get(away_en, away_en) or ""
             
             home_pt = norm(h_name)
             away_pt = norm(a_name)
@@ -112,13 +104,20 @@ for m in matches:
 
 # 8. Sobrescreve o HTML com os placares e a data atual
 if novos_resultados:
-    # (Manter o seu código anterior de replace do HC aqui...)
+    sorted_keys = sorted(novos_resultados.keys())
     
-    # Adicionar agora a atualização da data:
-    from datetime import datetime, timedelta
+    dict_items = [f"{k}:[{novos_resultados[k][0]},{novos_resultados[k][1]}]" for k in sorted_keys]
+    dict_str = "const HC = {" + ", ".join(dict_items) + "};"
+    arr_str = "const HC = [" + ", ".join(str(k) for k in sorted_keys) + "];"
+    
+    html = re.sub(r'const HC = \{.*?\};', dict_str, html)
+    html = re.sub(r'const HC = \[.*?\];', arr_str, html)
+    
     hora_atual = (datetime.utcnow() - timedelta(hours=3)).strftime("%d/%m/%Y às %H:%M")
     html = re.sub(r'<span id="last-update">.*?</span>', f'<span id="last-update">{hora_atual}</span>', html)
     
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html)
-    print(f"Sucesso! {len(novos_resultados)} jogos finalizados processados.")
+    print(f"Sucesso! {len(novos_resultados)} jogos atualizados em {hora_atual}.")
+else:
+    print("Nenhum resultado finalizado encontrado no momento.")
