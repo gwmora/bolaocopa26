@@ -81,6 +81,10 @@ for m in matches:
     if m.get('status') == 'FINISHED':
         home_en = m['homeTeam'].get('name')
         away_en = m['awayTeam'].get('name')
+
+        # --- LINHA NOVA PARA DESCOBRIR O NOME ---
+        print(f"A API encontrou finalizado: '{home_en}' x '{away_en}'")
+        # ----------------------------------------
         
         # --- CORREÇÃO MANUAL PARA ESPANHA ---
         if home_en == "Spain" and away_en == "Saudi Arabia":
