@@ -148,7 +148,7 @@ function BG(){let h='',cg='';
 let saved={};try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
 GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}
 let xQ='',xR='',vQ='',vR='';
-const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 24:[1,1], 25:[0,1], 26:[0,1], 27:[3,0], 31:[4,1], 32:[2,0], 33:[0,1], 34:[2,0], 38:[7,1], 39:[1,0], 40:[2,1], 41:[0,0], 45:[2,2], 46:[5,1], 47:[5,1], 48:[0,4], 52:[2,2], 53:[1,1], 54:[0,0], 55:[1,3], 59:[0,0], 60:[1,1], 61:[4,0], 62:[2,2], 66:[3,1], 67:[1,4], 74:[3,0], 75:[3,1], 76:[2,0], 82:[1,1], 83:[1,3], 90:[4,2], 91:[1,0]};
+const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 24:[1,1], 25:[0,1], 26:[0,1], 27:[3,0], 31:[4,1], 32:[2,0], 33:[0,1], 34:[2,0], 38:[7,1], 39:[1,0], 40:[2,1], 41:[0,0], 45:[2,2], 46:[5,1], 47:[5,1], 48:[0,4], 52:[2,2], 53:[1,1], 54:[0,0], 59:[0,0], 60:[1,1], 61:[4,0], 66:[3,1], 67:[1,4], 74:[3,0], 75:[3,1], 82:[1,1], 83:[1,3], 90:[4,2], 91:[1,0]};
 if(HC[r]){
 vQ=' value=\"'+HC[r][0]+'\"';vR=' value=\"'+HC[r][1]+'\"';xQ=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';xR=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';
 }else if(saved[r]){
@@ -176,23 +176,66 @@ const mmPhases = [
 
 let savedMM = {}; try{savedMM=JSON.parse(localStorage.getItem('bolao_gabarito_mm')||'{}');}catch(e){}
 
+const pMap = {
+    73: ['2º do Grupo A', '2º do Grupo B'], 74: ['1º do Grupo E', '3º a definir'],
+    75: ['1º do Grupo F', '2º do Grupo C'], 76: ['1º do Grupo C', '2º do Grupo F'],
+    77: ['1º do Grupo I', '3º a definir'], 78: ['2º do Grupo E', '2º do Grupo I'],
+    79: ['1º do Grupo A', '3º a definir'], 80: ['1º do Grupo L', '3º a definir'],
+    81: ['1º do Grupo D', '3º a definir'], 82: ['1º do Grupo G', '3º a definir'],
+    83: ['2º do Grupo K', '2º do Grupo L'], 84: ['1º do Grupo H', '2º do Grupo J'],
+    85: ['1º do Grupo B', '3º a definir'], 86: ['1º do Grupo J', '2º do Grupo H'],
+    87: ['1º do Grupo K', '3º a definir'], 88: ['2º do Grupo D', '2º do Grupo G'],
+    89: ['Venc. J73', 'Venc. J74'], 90: ['Venc. J75', 'Venc. J76'],
+    91: ['Venc. J77', 'Venc. J78'], 92: ['Venc. J79', 'Venc. J80'],
+    93: ['Venc. J81', 'Venc. J82'], 94: ['Venc. J83', 'Venc. J84'],
+    95: ['Venc. J85', 'Venc. J86'], 96: ['Venc. J87', 'Venc. J88'],
+    97: ['Venc. J89', 'Venc. J90'], 98: ['Venc. J91', 'Venc. J92'],
+    99: ['Venc. J93', 'Venc. J94'], 100: ['Venc. J95', 'Venc. J96'],
+    101: ['Venc. J97', 'Venc. J98'], 102: ['Venc. J99', 'Venc. J100'],
+    103: ['Perd. J101', 'Perd. J102'], 104: ['Venc. J101', 'Venc. J102']
+};
+
 mmPhases.forEach(ph => {
   hmm += '<div class="gt" style="background:#2d6b3f;margin-top:20px">' + ph.name + '</div>';
   ph.ids.forEach(id => {
-    let t1='', t2='', q='', r='', locked=false;
-    if(savedMM[id]){
-      t1=savedMM[id][0]; t2=savedMM[id][1]; q=savedMM[id][2]; r=savedMM[id][3]; locked=(savedMM[id][4]==='locked');
+    let t1='', t2='', q='', r='', qe='', re='', pq='', pr='', locked=false;
+    if(savedMM && savedMM[id]){
+      t1=savedMM[id][0]; t2=savedMM[id][1]; q=savedMM[id][2]; r=savedMM[id][3]; qe=savedMM[id][4]; re=savedMM[id][5]; 
+      if(savedMM[id].length > 8) {
+          pq=savedMM[id][6]; pr=savedMM[id][7]; locked=(savedMM[id][8]==='locked');
+      } else {
+          locked=(savedMM[id][7]==='locked');
+          pq=''; pr='';
+      }
     }
-    let dis = locked ? ' disabled style="background:#e0e0e0;font-weight:700;color:#555"' : '';
-    let ro = locked ? ' readonly style="background:#e0e0e0;font-weight:700;color:#555"' : '';
     
-    let sel1 = '<select id="mm_t1_'+id+'" style="max-width:110px;font-size:0.8em"'+dis+'>'+opts.replace('value="'+t1+'"','value="'+t1+'" selected')+'</select>';
-    let sel2 = '<select id="mm_t2_'+id+'" style="max-width:110px;font-size:0.8em"'+dis+'>'+opts.replace('value="'+t2+'"','value="'+t2+'" selected')+'</select>';
+    let lStyle = 'font-weight:bold;color:#1a472a;background:#f0f0f0;cursor:not-allowed;';
+    let dis = locked ? ' disabled style="'+lStyle+'"' : '';
+    let ro = locked ? ' readonly style="'+lStyle+'"' : '';
+    let evt = ' onkeyup="updateCascade('+id+')" onchange="updateCascade('+id+')"';
     
-    hmm += '<div class="gr" style="grid-template-columns: 25px 1fr 44px 14px 44px 1fr"><span class="d">J'+id+'</span><span class="t">'+sel1+'</span><input type="number" id="mm_q'+id+'" min="0" max="20" value="'+q+'"'+ro+'><span class="x">\u00d7</span><input type="number" id="mm_r'+id+'" min="0" max="20" value="'+r+'"'+ro+'><span class="t t2">'+sel2+'</span></div>';
+    let isF32 = id <= 88;
+    let opt1 = opts.replace('-- Selecione --', pMap[id][0]);
+    let opt2 = opts.replace('-- Selecione --', pMap[id][1]);
+    
+    let styleSel1 = isF32 ? (t1!=='' || locked ? lStyle : '') : '';
+    let styleSel2 = isF32 ? (t2!=='' || locked ? lStyle : '') : '';
+    
+    let sel1 = isF32 ? '<select id="mm_t1_'+id+'" style="max-width:110px;font-size:0.8em;'+styleSel1+'"'+dis+'>'+opt1.replace('value="'+t1+'"','value="'+t1+'" selected')+'</select>' : '<input type="text" id="mm_t1_'+id+'" value="'+t1+'" placeholder="'+pMap[id][0]+'" readonly style="width:110px;font-size:0.8em;'+(t1!==''? lStyle : 'background:#f9f9f9;color:#888;font-style:italic;')+'">';
+    let sel2 = isF32 ? '<select id="mm_t2_'+id+'" style="max-width:110px;font-size:0.8em;'+styleSel2+'"'+dis+'>'+opt2.replace('value="'+t2+'"','value="'+t2+'" selected')+'</select>' : '<input type="text" id="mm_t2_'+id+'" value="'+t2+'" placeholder="'+pMap[id][1]+'" readonly style="width:110px;font-size:0.8em;'+(t2!==''? lStyle : 'background:#f9f9f9;color:#888;font-style:italic;')+'">';
+    
+    hmm += '<div style="margin-bottom:8px; border-bottom:1px solid #e0e0e0; padding-bottom:5px;">';
+    hmm += '<div class="gr" style="grid-template-columns: 25px 1fr 44px 14px 44px 1fr; border-bottom:none;"><span class="d">J'+id+'</span><span class="t">'+sel1+'</span><input type="number" id="mm_q'+id+'" min="0" max="20" value="'+q+'"'+ro+evt+'><span class="x">\u00d7</span><input type="number" id="mm_r'+id+'" min="0" max="20" value="'+r+'"'+ro+evt+'><span class="t t2">'+sel2+'</span></div>';
+    
+    let extDisp = (q!=='' && r!=='' && q===r) ? 'flex' : 'none';
+    let penDisp = (extDisp==='flex' && qe!=='' && re!=='' && qe===re) ? 'flex' : 'none';
+    
+    hmm += '<div id="mm_ext_'+id+'" style="display:'+extDisp+'; justify-content:center; align-items:center; gap:5px; font-size:0.7em; color:#666; margin-top:3px;"><span style="background:#e65100;color:#fff;padding:2px 4px;border-radius:3px;">Prorrogação</span> <input type="number" id="mm_qe'+id+'" min="0" max="20" value="'+qe+'" style="width:35px;font-size:1em"'+ro+evt+'> <span class="x">\u00d7</span> <input type="number" id="mm_re'+id+'" min="0" max="20" value="'+re+'" style="width:35px;font-size:1em"'+ro+evt+'></div>';
+    
+    hmm += '<div id="mm_pen_'+id+'" style="display:'+penDisp+'; justify-content:center; align-items:center; gap:5px; font-size:0.7em; color:#666; margin-top:3px;"><span style="background:#c49b00;color:#000;padding:2px 4px;border-radius:3px;font-weight:bold;">Pênaltis</span> <input type="number" id="mm_pq'+id+'" min="0" max="20" value="'+pq+'" style="width:35px;font-size:1em"'+ro+evt+'> <span class="x">\u00d7</span> <input type="number" id="mm_pr'+id+'" min="0" max="20" value="'+pr+'" style="width:35px;font-size:1em"'+ro+evt+'></div>';
+    hmm += '</div>';
   });
 });
-
 document.getElementById('gg_mm').innerHTML = hmm;
 
 let optTeams = '<option value="">-- Selecione --</option>';
@@ -232,6 +275,37 @@ if(r!==10 && r!==11){q.readOnly=true;q.style.background='#e0e0e0';q.style.fontWe
 }else if(q.value!==''||rv.value!==''){saved[r]=[q.value,rv.value,'unlocked'];}
 });
 localStorage.setItem('bolao_gabarito',JSON.stringify(saved));
+
+
+let savedMMToStore = {};
+[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104].forEach(id=>{
+  const t1 = document.getElementById('mm_t1_'+id);
+  const t2 = document.getElementById('mm_t2_'+id);
+  const q = document.getElementById('mm_q'+id);
+  const r = document.getElementById('mm_r'+id);
+  const qe = document.getElementById('mm_qe'+id);
+  const re = document.getElementById('mm_re'+id);
+  const pq = document.getElementById('mm_pq'+id);
+  const pr = document.getElementById('mm_pr'+id);
+  
+  if(t1 && t2) {
+     if(q.value!=='' && r.value!=='') {
+       savedMMToStore[id] = [t1.value, t2.value, q.value, r.value, (qe?qe.value:''), (re?re.value:''), (pq?pq.value:''), (pr?pr.value:''), 'locked'];
+       q.readOnly=true; q.style.background='#f0f0f0'; q.style.color='#1a472a'; q.style.fontWeight='bold';
+       r.readOnly=true; r.style.background='#f0f0f0'; r.style.color='#1a472a'; r.style.fontWeight='bold';
+       if(qe){qe.readOnly=true; qe.style.background='#f0f0f0'; qe.style.color='#1a472a'; qe.style.fontWeight='bold';}
+       if(re){re.readOnly=true; re.style.background='#f0f0f0'; re.style.color='#1a472a'; re.style.fontWeight='bold';}
+       if(pq){pq.readOnly=true; pq.style.background='#f0f0f0'; pq.style.color='#1a472a'; pq.style.fontWeight='bold';}
+       if(pr){pr.readOnly=true; pr.style.background='#f0f0f0'; pr.style.color='#1a472a'; pr.style.fontWeight='bold';}
+     } else if(q.value!==''||r.value!=='') {
+       savedMMToStore[id] = [t1.value, t2.value, q.value, r.value, (qe?qe.value:''), (re?re.value:''), (pq?pq.value:''), (pr?pr.value:''), 'unlocked'];
+     }
+  }
+});
+localStorage.setItem('bolao_gabarito_mm',JSON.stringify(savedMMToStore));
+savedMM = savedMMToStore;
+
+
 let savedBonus={};
 ['cam','vic','art','ga','atq','def','tg'].forEach(b=>{
 const el=document.getElementById('g_'+b);
@@ -245,7 +319,7 @@ RC();
 
 }
 function unlockGabarito(){
-    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 55, 59, 60, 61, 62, 66, 67, 74, 75, 76, 82, 83, 90, 91];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 59, 60, 61, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g=>{
         const r=g[0];
         if(HC.includes(r)) return;
@@ -261,10 +335,64 @@ function unlockGabarito(){
         if(el){el.readOnly=false;el.style.background='#fff';el.style.fontWeight='normal';el.style.color='#333';}
     });
     let saved={}; try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
+let savedMM={}; try{savedMM=JSON.parse(localStorage.getItem('bolao_gabarito_mm')||'{}');}catch(e){}
     Object.keys(saved).forEach(k=>{
         if(!HC.includes(parseInt(k))) saved[k][2]='unlocked';
     });
     localStorage.setItem('bolao_gabarito',JSON.stringify(saved));
+
+    [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104].forEach(id=>{
+        const q = document.getElementById('mm_q'+id);
+        const r = document.getElementById('mm_r'+id);
+        const qe = document.getElementById('mm_qe'+id);
+        const re = document.getElementById('mm_re'+id);
+        const pq = document.getElementById('mm_pq'+id);
+        const pr = document.getElementById('mm_pr'+id);
+        if(q) { q.readOnly=false; q.style.background='#f8f8f0'; q.style.color='#1a472a'; q.style.fontWeight='normal'; }
+        if(r) { r.readOnly=false; r.style.background='#f8f8f0'; r.style.color='#1a472a'; r.style.fontWeight='normal'; }
+        if(qe) { qe.readOnly=false; qe.style.background='#f8f8f0'; qe.style.color='#1a472a'; qe.style.fontWeight='normal'; }
+        if(re) { re.readOnly=false; re.style.background='#f8f8f0'; re.style.color='#1a472a'; re.style.fontWeight='normal'; }
+        if(pq) { pq.readOnly=false; pq.style.background='#f8f8f0'; pq.style.color='#1a472a'; pq.style.fontWeight='normal'; }
+        if(pr) { pr.readOnly=false; pr.style.background='#f8f8f0'; pr.style.color='#1a472a'; pr.style.fontWeight='normal'; }
+    });
+    try{
+        let sm = JSON.parse(localStorage.getItem('bolao_gabarito_mm')||'{}');
+        Object.keys(sm).forEach(k=>{if(sm[k] && sm[k].length > 8) sm[k][8]='unlocked'; else if(sm[k]) sm[k][7]='unlocked';});
+        localStorage.setItem('bolao_gabarito_mm',JSON.stringify(sm));
+        savedMM = sm;
+    }catch(e){}
+
+
+
+let savedMMToStore = {};
+[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104].forEach(id=>{
+  const t1 = document.getElementById('mm_t1_'+id);
+  const t2 = document.getElementById('mm_t2_'+id);
+  const q = document.getElementById('mm_q'+id);
+  const r = document.getElementById('mm_r'+id);
+  const qe = document.getElementById('mm_qe'+id);
+  const re = document.getElementById('mm_re'+id);
+  const pq = document.getElementById('mm_pq'+id);
+  const pr = document.getElementById('mm_pr'+id);
+  
+  if(t1 && t2) {
+     if(q.value!=='' && r.value!=='') {
+       savedMMToStore[id] = [t1.value, t2.value, q.value, r.value, (qe?qe.value:''), (re?re.value:''), (pq?pq.value:''), (pr?pr.value:''), 'locked'];
+       q.readOnly=true; q.style.background='#f0f0f0'; q.style.color='#1a472a'; q.style.fontWeight='bold';
+       r.readOnly=true; r.style.background='#f0f0f0'; r.style.color='#1a472a'; r.style.fontWeight='bold';
+       if(qe){qe.readOnly=true; qe.style.background='#f0f0f0'; qe.style.color='#1a472a'; qe.style.fontWeight='bold';}
+       if(re){re.readOnly=true; re.style.background='#f0f0f0'; re.style.color='#1a472a'; re.style.fontWeight='bold';}
+       if(pq){pq.readOnly=true; pq.style.background='#f0f0f0'; pq.style.color='#1a472a'; pq.style.fontWeight='bold';}
+       if(pr){pr.readOnly=true; pr.style.background='#f0f0f0'; pr.style.color='#1a472a'; pr.style.fontWeight='bold';}
+     } else if(q.value!==''||r.value!=='') {
+       savedMMToStore[id] = [t1.value, t2.value, q.value, r.value, (qe?qe.value:''), (re?re.value:''), (pq?pq.value:''), (pr?pr.value:''), 'unlocked'];
+     }
+  }
+});
+localStorage.setItem('bolao_gabarito_mm',JSON.stringify(savedMMToStore));
+savedMM = savedMMToStore;
+
+
     let savedBonus={}; try{savedBonus=JSON.parse(localStorage.getItem('bolao_bonus')||'{}');}catch(e){}
     Object.keys(savedBonus).forEach(k=>{savedBonus[k].status='unlocked';});
     localStorage.setItem('bolao_bonus',JSON.stringify(savedBonus));
@@ -279,8 +407,13 @@ o.mm = {};
   const t2 = document.getElementById('mm_t2_'+id);
   const q = document.getElementById('mm_q'+id);
   const r = document.getElementById('mm_r'+id);
+  const qe = document.getElementById('mm_qe'+id);
+  const re = document.getElementById('mm_re'+id);
+  const pq = document.getElementById('mm_pq'+id);
+  const pr = document.getElementById('mm_pr'+id);
+  
   if(t1 && t2) {
-     o.mm[id] = [t1.value, t2.value, q.value, r.value];
+     o.mm[id] = [t1.value, t2.value, q?q.value:'', r?r.value:'', qe?qe.value:'', re?re.value:'', pq?pq.value:'', pr?pr.value:''];
   }
 });
 return o;}
@@ -346,7 +479,7 @@ let LR=[];
 function buildGabSt(gab){let h='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Top 3 por Grupo e Piores Terceiros</h3><table class="tg" style="width:100%;margin-bottom:15px"><tr><th>Grupo</th><th>1\u00ba Colocado</th><th>2\u00ba Colocado</th><th>3\u00ba Colocado</th></tr>';let thirds=[];GR.forEach(([gn])=>{const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});}}});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4=thirds.length>8?thirds.slice(8).map(t=>t.n):[];GR.forEach(([gn])=>{let g1='-',g2='-',g3='-',g3c='';const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(worst4.includes(g3)){g3c='background:#ffebee;color:#c62828;font-weight:700';}else if(thirds.some(t=>t.n===g3)){g3c='background:#e8f5e9;color:#2e7d32;font-weight:700';}}}h+='<tr><td style="color:#1a472a;font-weight:700;text-align:center">Grupo '+gn+'</td><td style="text-align:center">'+g1+'</td><td style="text-align:center">'+g2+'</td><td style="text-align:center;'+g3c+'">'+g3+'</td></tr>';});h+='</table><p style="font-size:0.8em;color:#666">* Os 4 piores terceiros colocados s\u00e3o hachurados em vermelho e n\u00e3o se classificam. Os 8 melhores ficam em verde.</p></div>';document.getElementById('gg_st').innerHTML=h;} 
 function limparGabarito() {
     if(!confirm("Deseja limpar as simulações? Os jogos já realizados serão mantidos intactos.")) return;
-    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 55, 59, 60, 61, 62, 66, 67, 74, 75, 76, 82, 83, 90, 91];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 59, 60, 61, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g => {
         const r = g[0];
         if (!HC.includes(r)) {
@@ -375,6 +508,67 @@ function limparGabarito() {
     localStorage.removeItem('bolao_gabarito_mm');
     RC();
 }
+
+const WX = {"ABCDEFGH": "ABCDEFGH", "ABCDEFGI": "ABCDEFGI", "ABCDEFGJ": "ABCDEFGJ", "ABCDEFGK": "ABCDEFKG", "ABCDEFGL": "ABCDEFGL", "ABCDEFHI": "ABCDEFHI", "ABCDEFHJ": "ABCDEFHJ", "ABCDEFHK": "ABCDEFKH", "ABCDEFHL": "ABCDEFHL", "ABCDEFIJ": "ABCDEFIJ", "ABCDEFIK": "ABCDEFKI", "ABCDEFIL": "ABCDEFIL", "ABCDEFJK": "ABCDEFKJ", "ABCDEFJL": "ABCDEFJL", "ABCDEFKL": "ABCDEFKL", "ABCDEGHI": "ABCDEHGI", "ABCDEGHJ": "ABCDEHGJ", "ABCDEGHK": "ABCDEHKG", "ABCDEGHL": "ABCDEHGL", "ABCDEGIJ": "ABCDEIGJ", "ABCDEGIK": "ABCDEIKG", "ABCDEGIL": "ABCDEIGL", "ABCDEGJK": "ABCDEJKG", "ABCDEGJL": "ABCDEJGL", "ABCDEGKL": "ABCDEKGL", "ABCDEHIJ": "ABCDEHIJ", "ABCDEHIK": "ABCDEHKI", "ABCDEHIL": "ABCDEHIL", "ABCDEHJK": "ABCDEHKJ", "ABCDEHJL": "ABCDEHJL", "ABCDEHKL": "ABCDEHKL", "ABCDEIJK": "ABCDEIKJ", "ABCDEIJL": "ABCDEIJL", "ABCDEIKL": "ABCDEIKL", "ABCDEJKL": "ABCDEJKL", "ABCDFGHI": "ABCDFHGI", "ABCDFGHJ": "ABCDFHGJ", "ABCDFGHK": "ABCDFHKG", "ABCDFGHL": "ABCDFHGL", "ABCDFGIJ": "ABCDFIGJ", "ABCDFGIK": "ABCDFIKG", "ABCDFGIL": "ABCDFIGL", "ABCDFGJK": "ABCDFJKG", "ABCDFGJL": "ABCDFJGL", "ABCDFGKL": "ABCDFKGL", "ABCDFHIJ": "ABCDFHIJ", "ABCDFHIK": "ABCDFHKI", "ABCDFHIL": "ABCDFHIL", "ABCDFHJK": "ABCDFHKJ", "ABCDFHJL": "ABCDFHJL", "ABCDFHKL": "ABCDFHKL", "ABCDFIJK": "ABCDFIKJ", "ABCDFIJL": "ABCDFIJL", "ABCDFIKL": "ABCDFIKL", "ABCDFJKL": "ABCDFJKL", "ABCDGHIJ": "ABCDGHIJ", "ABCDGHIK": "ABCDGHKI", "ABCDGHIL": "ABCDGHIL", "ABCDGHJK": "ABCDGHKJ", "ABCDGHJL": "ABCDGHJL", "ABCDGHKL": "ABCDGHKL", "ABCDGIJK": "ABCDGIKJ", "ABCDGIJL": "ABCDGIJL", "ABCDGIKL": "ABCDGIKL", "ABCDGJKL": "ABCDGJKL", "ABCDHIJK": "ABCDHIKJ", "ABCDHIJL": "ABCDHIJL", "ABCDHIKL": "ABCDHIKL", "ABCDHJKL": "ABCDHJKL", "ABCDIJKL": "ABCDIJKL", "ABCEFGHI": "ABCEFHGI", "ABCEFGHJ": "ABCEFHGJ", "ABCEFGHK": "ABCEFHKG", "ABCEFGHL": "ABCEFHGL", "ABCEFGIJ": "ABCEFIGJ", "ABCEFGIK": "ABCEFIKG", "ABCEFGIL": "ABCEFIGL", "ABCEFGJK": "ABCEFJKG", "ABCEFGJL": "ABCEFJGL", "ABCEFGKL": "ABCEFKGL", "ABCEFHIJ": "ABCEFHIJ", "ABCEFHIK": "ABCEFHKI", "ABCEFHIL": "ABCEFHIL", "ABCEFHJK": "ABCEFHKJ", "ABCEFHJL": "ABCEFHJL", "ABCEFHKL": "ABCEFHKL", "ABCEFIJK": "ABCEFIKJ", "ABCEFIJL": "ABCEFIJL", "ABCEFIKL": "ABCEFIKL", "ABCEFJKL": "ABCEFJKL", "ABCEGHIJ": "ABCEGHIJ", "ABCEGHIK": "ABCEGHKI", "ABCEGHIL": "ABCEGHIL", "ABCEGHJK": "ABCEGHKJ", "ABCEGHJL": "ABCEGHJL", "ABCEGHKL": "ABCEGHKL", "ABCEGIJK": "ABCEGIKJ", "ABCEGIJL": "ABCEGIJL", "ABCEGIKL": "ABCEGIKL", "ABCEGJKL": "ABCEGJKL", "ABCEHIJK": "ABCEHIKJ", "ABCEHIJL": "ABCEHIJL", "ABCEHIKL": "ABCEHIKL", "ABCEHJKL": "ABCEHJKL", "ABCEIJKL": "ABCEIJKL", "ABCFGHIJ": "ABCFGHIJ", "ABCFGHIK": "ABCFGHKI", "ABCFGHIL": "ABCFGHIL", "ABCFGHJK": "ABCFGHKJ", "ABCFGHJL": "ABCFGHJL", "ABCFGHKL": "ABCFGHKL", "ABCFGIJK": "ABCFGIKJ", "ABCFGIJL": "ABCFGIJL", "ABCFGIKL": "ABCFGIKL", "ABCFGJKL": "ABCFGJKL", "ABCFHIJK": "ABCFHIKJ", "ABCFHIJL": "ABCFHIJL", "ABCFHIKL": "ABCFHIKL", "ABCFHJKL": "ABCFHJKL", "ABCFIJKL": "ABCFIJKL", "ABCGHIJK": "ABCGHIKJ", "ABCGHIJL": "ABCGHIJL", "ABCGHIKL": "ABCGHIKL", "ABCGHJKL": "ABCGHJKL", "ABCGIJKL": "ABCGIJKL", "ABCHIJKL": "ABCHIJKL", "ABDEFGHI": "ABDEFHGI", "ABDEFGHJ": "ABDEFHGJ", "ABDEFGHK": "ABDEFHKG", "ABDEFGHL": "ABDEFHGL", "ABDEFGIJ": "ABDEFIGJ", "ABDEFGIK": "ABDEFIKG", "ABDEFGIL": "ABDEFIGL", "ABDEFGJK": "ABDEFJKG", "ABDEFGJL": "ABDEFJGL", "ABDEFGKL": "ABDEFKGL", "ABDEFHIJ": "ABDEFHIJ", "ABDEFHIK": "ABDEFHKI", "ABDEFHIL": "ABDEFHIL", "ABDEFHJK": "ABDEFHKJ", "ABDEFHJL": "ABDEFHJL", "ABDEFHKL": "ABDEFHKL", "ABDEFIJK": "ABDEFIKJ", "ABDEFIJL": "ABDEFIJL", "ABDEFIKL": "ABDEFIKL", "ABDEFJKL": "ABDEFJKL", "ABDEGHIJ": "ABDEGHIJ", "ABDEGHIK": "ABDEGHKI", "ABDEGHIL": "ABDEGHIL", "ABDEGHJK": "ABDEGHKJ", "ABDEGHJL": "ABDEGHJL", "ABDEGHKL": "ABDEGHKL", "ABDEGIJK": "ABDEGIKJ", "ABDEGIJL": "ABDEGIJL", "ABDEGIKL": "ABDEGIKL", "ABDEGJKL": "ABDEGJKL", "ABDEHIJK": "ABDEHIKJ", "ABDEHIJL": "ABDEHIJL", "ABDEHIKL": "ABDEHIKL", "ABDEHJKL": "ABDEHJKL", "ABDEIJKL": "ABDEIJKL", "ABDFGHIJ": "ABDFGHIJ", "ABDFGHIK": "ABDFGHKI", "ABDFGHIL": "ABDFGHIL", "ABDFGHJK": "ABDFGHKJ", "ABDFGHJL": "ABDFGHJL", "ABDFGHKL": "ABDFGHKL", "ABDFGIJK": "ABDFGIKJ", "ABDFGIJL": "ABDFGIJL", "ABDFGIKL": "ABDFGIKL", "ABDFGJKL": "ABDFGJKL", "ABDFHIJK": "ABDFHIKJ", "ABDFHIJL": "ABDFHIJL", "ABDFHIKL": "ABDFHIKL", "ABDFHJKL": "ABDFHJKL", "ABDFIJKL": "ABDFIJKL", "ABDGHIJK": "ABDGHIKJ", "ABDGHIJL": "ABDGHIJL", "ABDGHIKL": "ABDGHIKL", "ABDGHJKL": "ABDGHJKL", "ABDGIJKL": "ABDGIJKL", "ABDHIJKL": "ABDHIJKL", "ABEFGHIJ": "ABEFGHIJ", "ABEFGHIK": "ABEFGHKI", "ABEFGHIL": "ABEFGHIL", "ABEFGHJK": "ABEFGHKJ", "ABEFGHJL": "ABEFGHJL", "ABEFGHKL": "ABEFGHKL", "ABEFGIJK": "ABEFGIKJ", "ABEFGIJL": "ABEFGIJL", "ABEFGIKL": "ABEFGIKL", "ABEFGJKL": "ABEFGJKL", "ABEFHIJK": "ABEFHIKJ", "ABEFHIJL": "ABEFHIJL", "ABEFHIKL": "ABEFHIKL", "ABEFHJKL": "ABEFHJKL", "ABEFIJKL": "ABEFIJKL", "ABEGHIJK": "ABEGHIKJ", "ABEGHIJL": "ABEGHIJL", "ABEGHIKL": "ABEGHIKL", "ABEGHJKL": "ABEGHJKL", "ABEGIJKL": "ABEGIJKL", "ABEHIJKL": "ABEHIJKL", "ABFGHIJK": "ABFGHIKJ", "ABFGHIJL": "ABFGHIJL", "ABFGHIKL": "ABFGHIKL", "ABFGHJKL": "ABFGHJKL", "ABFGIJKL": "ABFGIJKL", "ABFHIJKL": "ABFHIJKL", "ABGHIJKL": "ABGHIJKL", "ACDEFGHI": "ACDEFHGI", "ACDEFGHJ": "ACDEFHGJ", "ACDEFGHK": "ACDEFHKG", "ACDEFGHL": "ACDEFHGL", "ACDEFGIJ": "ACDEFIGJ", "ACDEFGIK": "ACDEFIKG", "ACDEFGIL": "ACDEFIGL", "ACDEFGJK": "ACDEFJKG", "ACDEFGJL": "ACDEFJGL", "ACDEFGKL": "ACDEFKGL", "ACDEFHIJ": "ACDEFHIJ", "ACDEFHIK": "ACDEFHKI", "ACDEFHIL": "ACDEFHIL", "ACDEFHJK": "ACDEFHKJ", "ACDEFHJL": "ACDEFHJL", "ACDEFHKL": "ACDEFHKL", "ACDEFIJK": "ACDEFIKJ", "ACDEFIJL": "ACDEFIJL", "ACDEFIKL": "ACDEFIKL", "ACDEFJKL": "ACDEFJKL", "ACDEGHIJ": "ACDEGHIJ", "ACDEGHIK": "ACDEGHKI", "ACDEGHIL": "ACDEGHIL", "ACDEGHJK": "ACDEGHKJ", "ACDEGHJL": "ACDEGHJL", "ACDEGHKL": "ACDEGHKL", "ACDEGIJK": "ACDEGIKJ", "ACDEGIJL": "ACDEGIJL", "ACDEGIKL": "ACDEGIKL", "ACDEGJKL": "ACDEGJKL", "ACDEHIJK": "ACDEHIKJ", "ACDEHIJL": "ACDEHIJL", "ACDEHIKL": "ACDEHIKL", "ACDEHJKL": "ACDEHJKL", "ACDEIJKL": "ACDEIJKL", "ACDFGHIJ": "ACDFGHIJ", "ACDFGHIK": "ACDFGHKI", "ACDFGHIL": "ACDFGHIL", "ACDFGHJK": "ACDFGHKJ", "ACDFGHJL": "ACDFGHJL", "ACDFGHKL": "ACDFGHKL", "ACDFGIJK": "ACDFGIKJ", "ACDFGIJL": "ACDFGIJL", "ACDFGIKL": "ACDFGIKL", "ACDFGJKL": "ACDFGJKL", "ACDFHIJK": "ACDFHIKJ", "ACDFHIJL": "ACDFHIJL", "ACDFHIKL": "ACDFHIKL", "ACDFHJKL": "ACDFHJKL", "ACDFIJKL": "ACDFIJKL", "ACDGHIJK": "ACDGHIKJ", "ACDGHIJL": "ACDGHIJL", "ACDGHIKL": "ACDGHIKL", "ACDGHJKL": "ACDGHJKL", "ACDGIJKL": "ACDGIJKL", "ACDHIJKL": "ACDHIJKL", "ACEFGHIJ": "ACEFGHIJ", "ACEFGHIK": "ACEFGHKI", "ACEFGHIL": "ACEFGHIL", "ACEFGHJK": "ACEFGHKJ", "ACEFGHJL": "ACEFGHJL", "ACEFGHKL": "ACEFGHKL", "ACEFGIJK": "ACEFGIKJ", "ACEFGIJL": "ACEFGIJL", "ACEFGIKL": "ACEFGIKL", "ACEFGJKL": "ACEFGJKL", "ACEFHIJK": "ACEFHIKJ", "ACEFHIJL": "ACEFHIJL", "ACEFHIKL": "ACEFHIKL", "ACEFHJKL": "ACEFHJKL", "ACEFIJKL": "ACEFIJKL", "ACEGHIJK": "ACEGHIKJ", "ACEGHIJL": "ACEGHIJL", "ACEGHIKL": "ACEGHIKL", "ACEGHJKL": "ACEGHJKL", "ACEGIJKL": "ACEGIJKL", "ACEHIJKL": "ACEHIJKL", "ACFGHIJK": "ACFGHIKJ", "ACFGHIJL": "ACFGHIJL", "ACFGHIKL": "ACFGHIKL", "ACFGHJKL": "ACFGHJKL", "ACFGIJKL": "ACFGIJKL", "ACFHIJKL": "ACFHIJKL", "ACGHIJKL": "ACGHIJKL", "ADEFGHIJ": "ADEFGHIJ", "ADEFGHIK": "ADEFGHKI", "ADEFGHIL": "ADEFGHIL", "ADEFGHJK": "ADEFGHKJ", "ADEFGHJL": "ADEFGHJL", "ADEFGHKL": "ADEFGHKL", "ADEFGIJK": "ADEFGIKJ", "ADEFGIJL": "ADEFGIJL", "ADEFGIKL": "ADEFGIKL", "ADEFGJKL": "ADEFGJKL", "ADEFHIJK": "ADEFHIKJ", "ADEFHIJL": "ADEFHIJL", "ADEFHIKL": "ADEFHIKL", "ADEFHJKL": "ADEFHJKL", "ADEFIJKL": "ADEFIJKL", "ADEGHIJK": "ADEGHIKJ", "ADEGHIJL": "ADEGHIJL", "ADEGHIKL": "ADEGHIKL", "ADEGHJKL": "ADEGHJKL", "ADEGIJKL": "ADEGIJKL", "ADEHIJKL": "ADEHIJKL", "ADFGHIJK": "ADFGHIKJ", "ADFGHIJL": "ADFGHIJL", "ADFGHIKL": "ADFGHIKL", "ADFGHJKL": "ADFGHJKL", "ADFGIJKL": "ADFGIJKL", "ADFHIJKL": "ADFHIJKL", "ADGHIJKL": "ADGHIJKL", "AEFGHIJK": "AEFGHIKJ", "AEFGHIJL": "AEFGHIJL", "AEFGHIKL": "AEFGHIKL", "AEFGHJKL": "AEFGHJKL", "AEFGIJKL": "AEFGIJKL", "AEFHIJKL": "AEFHIJKL", "AEGHIJKL": "AEGHIJKL", "AFGHIJKL": "AFGHIJKL", "BCDEFGHI": "BCDEFHGI", "BCDEFGHJ": "BCDEFHGJ", "BCDEFGHK": "BCDEFHKG", "BCDEFGHL": "BCDEFHGL", "BCDEFGIJ": "BCDEFIGJ", "BCDEFGIK": "BCDEFIKG", "BCDEFGIL": "BCDEFIGL", "BCDEFGJK": "BCDEFJKG", "BCDEFGJL": "BCDEFJGL", "BCDEFGKL": "BCDEFKGL", "BCDEFHIJ": "BCDEFHIJ", "BCDEFHIK": "BCDEFHKI", "BCDEFHIL": "BCDEFHIL", "BCDEFHJK": "BCDEFHKJ", "BCDEFHJL": "BCDEFHJL", "BCDEFHKL": "BCDEFHKL", "BCDEFIJK": "BCDEFIKJ", "BCDEFIJL": "BCDEFIJL", "BCDEFIKL": "BCDEFIKL", "BCDEFJKL": "BCDEFJKL", "BCDEGHIJ": "BCDEGHIJ", "BCDEGHIK": "BCDEGHKI", "BCDEGHIL": "BCDEGHIL", "BCDEGHJK": "BCDEGHKJ", "BCDEGHJL": "BCDEGHJL", "BCDEGHKL": "BCDEGHKL", "BCDEGIJK": "BCDEGIKJ", "BCDEGIJL": "BCDEGIJL", "BCDEGIKL": "BCDEGIKL", "BCDEGJKL": "BCDEGJKL", "BCDEHIJK": "BCDEHIKJ", "BCDEHIJL": "BCDEHIJL", "BCDEHIKL": "BCDEHIKL", "BCDEHJKL": "BCDEHJKL", "BCDEIJKL": "BCDEIJKL", "BCDFGHIJ": "BCDFGHIJ", "BCDFGHIK": "BCDFGHKI", "BCDFGHIL": "BCDFGHIL", "BCDFGHJK": "BCDFGHKJ", "BCDFGHJL": "BCDFGHJL", "BCDFGHKL": "BCDFGHKL", "BCDFGIJK": "BCDFGIKJ", "BCDFGIJL": "BCDFGIJL", "BCDFGIKL": "BCDFGIKL", "BCDFGJKL": "BCDFGJKL", "BCDFHIJK": "BCDFHIKJ", "BCDFHIJL": "BCDFHIJL", "BCDFHIKL": "BCDFHIKL", "BCDFHJKL": "BCDFHJKL", "BCDFIJKL": "BCDFIJKL", "BCDGHIJK": "BCDGHIKJ", "BCDGHIJL": "BCDGHIJL", "BCDGHIKL": "BCDGHIKL", "BCDGHJKL": "BCDGHJKL", "BCDGIJKL": "BCDGIJKL", "BCDHIJKL": "BCDHIJKL", "BCEFGHIJ": "BCEFGHIJ", "BCEFGHIK": "BCEFGHKI", "BCEFGHIL": "BCEFGHIL", "BCEFGHJK": "BCEFGHKJ", "BCEFGHJL": "BCEFGHJL", "BCEFGHKL": "BCEFGHKL", "BCEFGIJK": "BCEFGIKJ", "BCEFGIJL": "BCEFGIJL", "BCEFGIKL": "BCEFGIKL", "BCEFGJKL": "BCEFGJKL", "BCEFHIJK": "BCEFHIKJ", "BCEFHIJL": "BCEFHIJL", "BCEFHIKL": "BCEFHIKL", "BCEFHJKL": "BCEFHJKL", "BCEFIJKL": "BCEFIJKL", "BCEGHIJK": "BCEGHIKJ", "BCEGHIJL": "BCEGHIJL", "BCEGHIKL": "BCEGHIKL", "BCEGHJKL": "BCEGHJKL", "BCEGIJKL": "BCEGIJKL", "BCEHIJKL": "BCEHIJKL", "BCFGHIJK": "BCFGHIKJ", "BCFGHIJL": "BCFGHIJL", "BCFGHIKL": "BCFGHIKL", "BCFGHJKL": "BCFGHJKL", "BCFGIJKL": "BCFGIJKL", "BCFHIJKL": "BCFHIJKL", "BCGHIJKL": "BCGHIJKL", "BDEFGHIJ": "BDEFGHIJ", "BDEFGHIK": "BDEFGHKI", "BDEFGHIL": "BDEFGHIL", "BDEFGHJK": "BDEFGHKJ", "BDEFGHJL": "BDEFGHJL", "BDEFGHKL": "BDEFGHKL", "BDEFGIJK": "BDEFGIKJ", "BDEFGIJL": "BDEFGIJL", "BDEFGIKL": "BDEFGIKL", "BDEFGJKL": "BDEFGJKL", "BDEFHIJK": "BDEFHIKJ", "BDEFHIJL": "BDEFHIJL", "BDEFHIKL": "BDEFHIKL", "BDEFHJKL": "BDEFHJKL", "BDEFIJKL": "BDEFIJKL", "BDEGHIJK": "BDEGHIKJ", "BDEGHIJL": "BDEGHIJL", "BDEGHIKL": "BDEGHIKL", "BDEGHJKL": "BDEGHJKL", "BDEGIJKL": "BDEGIJKL", "BDEHIJKL": "BDEHIJKL", "BDFGHIJK": "BDFGHIKJ", "BDFGHIJL": "BDFGHIJL", "BDFGHIKL": "BDFGHIKL", "BDFGHJKL": "BDFGHJKL", "BDFGIJKL": "BDFGIJKL", "BDFHIJKL": "BDFHIJKL", "BDGHIJKL": "BDGHIJKL", "BEFGHIJK": "BEFGHIKJ", "BEFGHIJL": "BEFGHIJL", "BEFGHIKL": "BEFGHIKL", "BEFGHJKL": "BEFGHJKL", "BEFGIJKL": "BEFGIJKL", "BEFHIJKL": "BEFHIJKL", "BEGHIJKL": "BEGHIJKL", "BFGHIJKL": "BFGHIJKL", "CDEFGHIJ": "CDEFGHIJ", "CDEFGHIK": "CDEFGHKI", "CDEFGHIL": "CDEFGHIL", "CDEFGHJK": "CDEFGHKJ", "CDEFGHJL": "CDEFGHJL", "CDEFGHKL": "CDEFGHKL", "CDEFGIJK": "CDEFGIKJ", "CDEFGIJL": "CDEFGIJL", "CDEFGIKL": "CDEFGIKL", "CDEFGJKL": "CDEFGJKL", "CDEFHIJK": "CDEFHIKJ", "CDEFHIJL": "CDEFHIJL", "CDEFHIKL": "CDEFHIKL", "CDEFHJKL": "CDEFHJKL", "CDEFIJKL": "CDEFIJKL", "CDEGHIJK": "CDEGHIKJ", "CDEGHIJL": "CDEGHIJL", "CDEGHIKL": "CDEGHIKL", "CDEGHJKL": "CDEGHJKL", "CDEGIJKL": "CDEGIJKL", "CDEHIJKL": "CDEHIJKL", "CDFGHIJK": "CDFGHIKJ", "CDFGHIJL": "CDFGHIJL", "CDFGHIKL": "CDFGHIKL", "CDFGHJKL": "CDFGHJKL", "CDFGIJKL": "CDFGIJKL", "CDFHIJKL": "CDFHIJKL", "CDGHIJKL": "CDGHIJKL", "CEFGHIJK": "CEFGHIKJ", "CEFGHIJL": "CEFGHIJL", "CEFGHIKL": "CEFGHIKL", "CEFGHJKL": "CEFGHJKL", "CEFGIJKL": "CEFGIJKL", "CEFHIJKL": "CEFHIJKL", "CEGHIJKL": "CEGHIJKL", "CFGHIJKL": "CFGHIJKL", "DEFGHIJK": "DEFGHIKJ", "DEFGHIJL": "DEFGHIJL", "DEFGHIKL": "DEFGHIKL", "DEFGHJKL": "DEFGHJKL", "DEFGIJKL": "DEFGIJKL", "DEFHIJKL": "DEFHIJKL", "DEGHIJKL": "DEGHIJKL", "DFGHIJKL": "DFGHIJKL", "EFGHIJKL": "FEGHIJKL"};
+
+function getMatchWinner(gab, id, returnLoser) {
+    if(!gab.mm || !gab.mm[id]) return '';
+    const m = gab.mm[id];
+    const t1 = m[0], t2 = m[1];
+    let q = m[2], r = m[3];
+    let qe = m[4], re = m[5];
+    let pq = m[6], pr = m[7];
+    
+    if(!t1 || !t2 || q === '' || r === '') return '';
+    q = parseInt(q); r = parseInt(r);
+    
+    let winner = '';
+    let loser = '';
+    
+    if (q > r) { winner = t1; loser = t2; }
+    else if (r > q) { winner = t2; loser = t1; }
+    else {
+        if (qe !== '' && re !== '') {
+            qe = parseInt(qe); re = parseInt(re);
+            if (qe > re) { winner = t1; loser = t2; }
+            else if (re > qe) { winner = t2; loser = t1; }
+            else {
+                if (pq !== '' && pr !== '') {
+                    pq = parseInt(pq); pr = parseInt(pr);
+                    if (pq > pr) { winner = t1; loser = t2; }
+                    else if (pr > pq) { winner = t2; loser = t1; }
+                }
+            }
+        }
+    }
+    
+    if(winner === '') return '';
+    return returnLoser ? loser : winner;
+}
+
+function updateCascade(id) {
+    let q = document.getElementById('mm_q'+id).value;
+    let r = document.getElementById('mm_r'+id).value;
+    let extDiv = document.getElementById('mm_ext_'+id);
+    let penDiv = document.getElementById('mm_pen_'+id);
+    
+    if(q !== '' && r !== '' && parseInt(q) === parseInt(r)) {
+        if(extDiv) extDiv.style.display = 'flex';
+        let qe = document.getElementById('mm_qe'+id);
+        let re = document.getElementById('mm_re'+id);
+        if(qe && re && qe.value !== '' && re.value !== '' && parseInt(qe.value) === parseInt(re.value)) {
+            if(penDiv) penDiv.style.display = 'flex';
+        } else {
+            if(penDiv) penDiv.style.display = 'none';
+        }
+    } else {
+        if(extDiv) extDiv.style.display = 'none';
+        if(penDiv) penDiv.style.display = 'none';
+    }
+    let o = GV();
+    autoFillMataMata(o);
+}
+
 function autoFillMataMata(gab) {
     let classificados = {};
     let allGroupsClosed = true;
@@ -391,6 +585,7 @@ function autoFillMataMata(gab) {
     });
     
     let best8 = [];
+    let best8Groups = [];
     if(allGroupsClosed) {
         let thirds = [];
         GR.forEach(([gn]) => {
@@ -400,17 +595,35 @@ function autoFillMataMata(gab) {
             }
         });
         thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
-        best8 = thirds.slice(0, 8).map(t => t.n);
+        
+        for(let i=0; i<8; i++) {
+           best8.push(thirds[i]);
+           best8Groups.push(thirds[i].gn);
+        }
     }
 
     const chaves32 = {
-        73: ['2ºA', '2ºB'], 74: ['1ºE', '3º'], 75: ['1ºF', '2ºC'], 76: ['1ºC', '2ºF'],
-        77: ['1ºI', '3º'], 78: ['2ºE', '2ºI'], 79: ['1ºA', '3º'], 80: ['1ºL', '3º'],
-        81: ['1ºD', '3º'], 82: ['1ºG', '3º'], 83: ['2ºK', '2ºL'], 84: ['1ºH', '2ºJ'],
-        85: ['1ºB', '3º'], 86: ['1ºJ', '2ºH'], 87: ['1ºK', '3º'], 88: ['2ºD', '2ºG']
+        73: ['2ºA', '2ºB'], 74: ['1ºE', '3ºE_host'], 75: ['1ºF', '2ºC'], 76: ['1ºC', '2ºF'],
+        77: ['1ºI', '3ºI_host'], 78: ['2ºE', '2ºI'], 79: ['1ºA', '3ºA_host'], 80: ['1ºL', '3ºL_host'],
+        81: ['1ºD', '3ºD_host'], 82: ['1ºG', '3ºG_host'], 83: ['2ºK', '2ºL'], 84: ['1ºH', '2ºJ'],
+        85: ['1ºB', '3ºB_host'], 86: ['1ºJ', '2ºH'], 87: ['1ºK', '3ºK_host'], 88: ['2ºD', '2ºG']
     };
     
-    let t3Index = 0;
+    let thirdAssignments = {};
+    if(allGroupsClosed) {
+        best8Groups.sort();
+        let code = best8Groups.join('');
+        let mapping = WX[code];
+        if(mapping) {
+            let hosts = ['E', 'I', 'A', 'L', 'D', 'G', 'B', 'K'];
+            for(let i=0; i<8; i++) {
+                let g = mapping[i];
+                let t = best8.find(x => x.gn === g).n;
+                thirdAssignments['3º' + hosts[i] + '_host'] = t;
+            }
+        }
+    }
+
     Object.keys(chaves32).forEach(id => {
         const sel1 = document.getElementById('mm_t1_' + id);
         const sel2 = document.getElementById('mm_t2_' + id);
@@ -418,24 +631,38 @@ function autoFillMataMata(gab) {
         let val1 = chaves32[id][0];
         let val2 = chaves32[id][1];
         
-        if (val1 === '3º') {
-            if (allGroupsClosed && best8[t3Index]) val1 = best8[t3Index];
-            else val1 = '';
-            t3Index++;
-        } else {
-            val1 = classificados[val1] || '';
-        }
+        if (val1.startsWith('3º')) val1 = thirdAssignments[val1] || '';
+        else val1 = classificados[val1] || '';
         
-        if (val2 === '3º') {
-            if (allGroupsClosed && best8[t3Index]) val2 = best8[t3Index];
-            else val2 = '';
-            t3Index++;
-        } else {
-            val2 = classificados[val2] || '';
-        }
+        if (val2.startsWith('3º')) val2 = thirdAssignments[val2] || '';
+        else val2 = classificados[val2] || '';
 
-        if (sel1 && !sel1.disabled && val1 !== '') sel1.value = val1;
-        if (sel2 && !sel2.disabled && val2 !== '') sel2.value = val2;
+        if (sel1 && val1 !== '') { sel1.value = val1; sel1.disabled = true; sel1.style.background = '#f0f0f0'; sel1.style.color = '#1a472a'; sel1.style.fontWeight = 'bold'; sel1.style.cursor = 'not-allowed'; }
+        if (sel2 && val2 !== '') { sel2.value = val2; sel2.disabled = true; sel2.style.background = '#f0f0f0'; sel2.style.color = '#1a472a'; sel2.style.fontWeight = 'bold'; sel2.style.cursor = 'not-allowed'; }
+    });
+
+    const nextPhases = {
+        89: [73, 74], 90: [75, 76], 91: [77, 78], 92: [79, 80],
+        93: [81, 82], 94: [83, 84], 95: [85, 86], 96: [87, 88],
+        97: [89, 90], 98: [91, 92], 99: [93, 94], 100: [95, 96],
+        101: [97, 98], 102: [99, 100],
+        103: [101, 102, true],
+        104: [101, 102]
+    };
+
+    Object.keys(nextPhases).forEach(id => {
+        const p1 = nextPhases[id][0];
+        const p2 = nextPhases[id][1];
+        const useLoser = nextPhases[id][2];
+        
+        const w1 = getMatchWinner(gab, p1, useLoser);
+        const w2 = getMatchWinner(gab, p2, useLoser);
+        
+        const i1 = document.getElementById('mm_t1_' + id);
+        const i2 = document.getElementById('mm_t2_' + id);
+        
+        if(i1 && i1.tagName === 'INPUT') { i1.value = w1; if(w1!=='') { i1.style.background='#f0f0f0'; i1.style.color='#1a472a'; i1.style.fontWeight='bold'; } else { i1.style.background='#f9f9f9'; i1.style.color='#888'; i1.style.fontWeight='normal'; } }
+        if(i2 && i2.tagName === 'INPUT') { i2.value = w2; if(w2!=='') { i2.style.background='#f0f0f0'; i2.style.color='#1a472a'; i2.style.fontWeight='bold'; } else { i2.style.background='#f9f9f9'; i2.style.color='#888'; i2.style.fontWeight='normal'; } }
     });
 }
 function RC(){const gab=GV();LR=PN.map(n=>CP(n,gab));LR.sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'pt'));buildTab(gab);buildPl(gab);SP();buildGabSt(gab);autoFillMataMata(gab);}
@@ -550,10 +777,10 @@ function SP(){
         if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}
         const gs=gab.g[r]||['',''],pp=pd.p[r]||['',''];
         const pts=SG(pp[0],pp[1],gs[0],gs[1]);
-        const pc=pts>=12?'e':pts>=9?'w':pts>=7?'r':'z';
         const gq=gs[0]!==''?gs[0]:'-',grv=gs[1]!==''?gs[1]:'-';
+        const pc=pts>=12?'e':pts>=9?'w':pts>=7?'r':((gq!=='-'&&grv!=='-')?'zero':'z');
         const pq=pp[0]!=null&&pp[0]!==''?pp[0]:'-',prr=pp[1]!=null&&pp[1]!==''?pp[1]:'-';
-        h+='<div class="pg"><span class="d">'+dt+'</span><span class="t">'+t1+'</span><span class="gb">'+gq+'</span><span class="x">\u00d7</span><span class="gb">'+grv+'</span><span class="t t2">'+t2+'</span><span class="pal">'+pq+'</span><span class="x">\u00d7</span><span class="pal">'+prr+'</span><span class="pt '+pc+'">'+(pts>0?'+'+pts:'-')+'</span></div>';
+        h+='<div class="pg"><span class="d">'+dt+'</span><span class="t">'+t1+'</span><span class="gb">'+gq+'</span><span class="x">\u00d7</span><span class="gb">'+grv+'</span><span class="t t2">'+t2+'</span><span class="pal">'+pq+'</span><span class="x">\u00d7</span><span class="pal">'+prr+'</span><span class="pt '+pc+'">'+(pts>0?'+'+pts:((gq!=='-'&&grv!=='-')?'0':'-'))+'</span></div>';
     });
     
     h+='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Classifica\u00e7\u00e3o nos Grupos</h3><table><tr><th>Grupo</th><th>1\u00ba Palp.</th><th>2\u00ba Palp.</th><th>3\u00ba Palp.</th><th>1\u00ba Gab.</th><th>2\u00ba Gab.</th><th>3\u00ba Gab.</th><th>Pts</th></tr>';
@@ -703,4 +930,4 @@ function SP(){
 }
 
 BG();const sel=document.getElementById('psel');PN.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});RC();
-</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">22/06/2026 às 20:06</span></div></body></html>
+</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">Aguardando...</span></div></body></html>
