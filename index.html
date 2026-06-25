@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VII Bolao Copa 2026 - v61</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Tahoma,sans-serif;background:#fff;color:#333}
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VII Bolao Copa 2026 - v62</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Tahoma,sans-serif;background:#fff;color:#333}
 .bn{background:linear-gradient(135deg,#1a472a,#2d6b3f,#1a472a);text-align:center;padding:14px 8px;border-bottom:4px solid #d4af37;position:sticky;top:0;z-index:200}
 .bn h1{color:#d4af37;font-size:clamp(.9em,3vw,1.5em)}.bn h2{color:#ccc;font-size:.75em;font-weight:400}
 .tabs{display:flex;justify-content:center;gap:3px;background:#1a472a;padding:6px;position:sticky;top:58px;z-index:199;flex-wrap:wrap}
@@ -150,7 +150,7 @@ function BG(){let h='',cg='';
 let saved={};try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
 GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}
 let xQ='',xR='',vQ='',vR='';
-const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 14:[0,3], 15:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 21:[2,1], 22:[3,1], 24:[1,1], 25:[0,1], 26:[0,1], 27:[3,0], 28:[0,3], 29:[4,2], 31:[4,1], 32:[2,0], 33:[0,1], 34:[2,0], 38:[7,1], 39:[1,0], 40:[2,1], 41:[0,0], 45:[2,2], 46:[5,1], 47:[5,1], 48:[0,4], 52:[2,2], 53:[1,1], 54:[0,0], 55:[1,3], 59:[0,0], 60:[1,1], 61:[4,0], 62:[2,2], 66:[3,1], 67:[1,4], 68:[3,0], 69:[3,2], 74:[3,0], 75:[3,1], 76:[2,0], 77:[1,2], 82:[1,1], 83:[1,3], 84:[5,0], 85:[1,0], 90:[4,2], 91:[1,0], 92:[0,0], 93:[0,1]};
+const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 24:[1,1], 25:[0,1], 26:[0,1], 27:[3,0], 31:[4,1], 32:[2,0], 33:[0,1], 34:[2,0], 38:[7,1], 39:[1,0], 40:[2,1], 41:[0,0], 45:[2,2], 46:[5,1], 47:[5,1], 48:[0,4], 52:[2,2], 53:[1,1], 54:[0,0], 59:[0,0], 60:[1,1], 61:[4,0], 66:[3,1], 67:[1,4], 74:[3,0], 75:[3,1], 82:[1,1], 83:[1,3], 90:[4,2], 91:[1,0]};
 if(HC[r]){
 vQ=' value=\"'+HC[r][0]+'\"';vR=' value=\"'+HC[r][1]+'\"';xQ=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';xR=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';
 }else if(saved[r]){
@@ -321,7 +321,7 @@ RC();
 
 }
 function unlockGabarito(){
-    const HC = [10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 55, 59, 60, 61, 62, 66, 67, 68, 69, 74, 75, 76, 77, 82, 83, 84, 85, 90, 91, 92, 93];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 59, 60, 61, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g=>{
         const r=g[0];
         if(HC.includes(r)) return;
@@ -421,7 +421,7 @@ o.mm = {};
 return o;}
 
 function IV(id){return(document.getElementById(id).value||'').trim();}
-function calcSt(gn,gab){const teams=GT[gn]||[],rows=GGM[gn]||[];const st={};teams.forEach(t=>{st[t]={pts:0,gp:0,gc:0,sd:0,n:t};});rows.forEach(r=>{const gs=gab.g[r]||['',''];if(gs[0]===''||gs[1]==='')return;const q=+gs[0],rv=+gs[1];if(isNaN(q)||isNaN(rv))return;const game=GM.find(g=>g[0]===r);if(!game)return;const t1=game[3],t2=game[4];if(!st[t1]||!st[t2])return;st[t1].gp+=q;st[t1].gc+=rv;st[t2].gp+=rv;st[t2].gc+=q;if(q>rv)st[t1].pts+=3;else if(q<rv)st[t2].pts+=3;else{st[t1].pts++;st[t2].pts++;}st[t1].sd=st[t1].gp-st[t1].gc;st[t2].sd=st[t2].gp-st[t2].gc;});return Object.values(st).sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));}
+function calcSt(gn,gab){const teams=GT[gn]||[],rows=GGM[gn]||[];const st={};teams.forEach(t=>{st[t]={pts:0,gp:0,gc:0,sd:0,j:0,n:t};});rows.forEach(r=>{const gs=gab.g[r]||['',''];if(gs[0]===''||gs[1]==='')return;const q=+gs[0],rv=+gs[1];if(isNaN(q)||isNaN(rv))return;const game=GM.find(g=>g[0]===r);if(!game)return;const t1=game[3],t2=game[4];if(!st[t1]||!st[t2])return;st[t1].j++;st[t2].j++;st[t1].gp+=q;st[t1].gc+=rv;st[t2].gp+=rv;st[t2].gc+=q;if(q>rv)st[t1].pts+=3;else if(q<rv)st[t2].pts+=3;else{st[t1].pts++;st[t2].pts++;}st[t1].sd=st[t1].gp-st[t1].gc;st[t2].sd=st[t2].gp-st[t2].gc;});return Object.values(st).sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));}
 function gF(gn,gab){return(GGM[gn]||[]).every(r=>{const gs=gab.g[r]||['',''];return gs[0]!==''&&gs[1]!=='';});}
 function norm(s){if(s===null||s===undefined)return"";return s.toString().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}function eq(a,b){var na=norm(a),nb=norm(b);if(na===""&&nb==="")return false;return na===nb;}
 function CP(name,gab){
@@ -481,7 +481,7 @@ let LR=[];
 function buildGabSt(gab){let h='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Top 3 por Grupo e Piores Terceiros</h3><table class="tg" style="width:100%;margin-bottom:15px"><tr><th>Grupo</th><th>1\u00ba Colocado</th><th>2\u00ba Colocado</th><th>3\u00ba Colocado</th></tr>';let thirds=[];GR.forEach(([gn])=>{const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});}}});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4=thirds.length>8?thirds.slice(8).map(t=>t.n):[];GR.forEach(([gn])=>{let g1='-',g2='-',g3='-',g3c='';const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(worst4.includes(g3)){g3c='background:#ffebee;color:#c62828;font-weight:700';}else if(thirds.some(t=>t.n===g3)){g3c='background:#e8f5e9;color:#2e7d32;font-weight:700';}}}h+='<tr><td style="color:#1a472a;font-weight:700;text-align:center">Grupo '+gn+'</td><td style="text-align:center">'+g1+'</td><td style="text-align:center">'+g2+'</td><td style="text-align:center;'+g3c+'">'+g3+'</td></tr>';});h+='</table><p style="font-size:0.8em;color:#666">* Os 4 piores terceiros colocados s\u00e3o hachurados em vermelho e n\u00e3o se classificam. Os 8 melhores ficam em verde.</p></div>';document.getElementById('gg_st').innerHTML=h;} 
 function limparGabarito() {
     if(!confirm("Deseja limpar as simulações? Os jogos já realizados serão mantidos intactos.")) return;
-    const HC = [10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 55, 59, 60, 61, 62, 66, 67, 68, 69, 74, 75, 76, 77, 82, 83, 84, 85, 90, 91, 92, 93];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 59, 60, 61, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g => {
         const r = g[0];
         if (!HC.includes(r)) {
@@ -593,7 +593,7 @@ function autoFillMataMata(gab) {
         GR.forEach(([gn]) => {
             const st = calcSt(gn, gab);
             if (st.length >= 3) {
-                thirds.push({gn:gn, n:st[2].n, pts:st[2].pts, sd:st[2].sd, gp:st[2].gp});
+                thirds.push({gn:gn, n:st[2].n, pts:st[2].pts, sd:st[2].sd, gp:st[2].gp, j:st[2].j});
             }
         });
         thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
@@ -681,7 +681,7 @@ function updateTabela3os(gab) {
     GR.forEach(([gn]) => {
         const st = calcSt(gn, gab);
         if (st.length >= 3) {
-            thirds.push({gn:gn, n:st[2].n, pts:st[2].pts, sd:st[2].sd, gp:st[2].gp});
+            thirds.push({gn:gn, n:st[2].n, pts:st[2].pts, sd:st[2].sd, gp:st[2].gp, j:st[2].j});
         }
     });
     
@@ -705,15 +705,12 @@ function updateTabela3os(gab) {
         }
     }
 
-    let dataAtual = new Date();
-    let dataFormatada = dataAtual.toLocaleDateString('pt-BR') + ' às ' + dataAtual.toLocaleTimeString('pt-BR');
-
-    let hmm = '<h3 style="margin-bottom:10px;text-align:center;padding:20px 0;">🥉 Classificação dos Terceiros Colocados <span style="font-size:0.65em;color:#d4af37;font-weight:normal;">(Atualizado em: ' + dataFormatada + ')</span></h3>';
+    let hmm = '<h3 style="margin-bottom:10px;text-align:center;padding:20px 0;">🥉 Classificação dos Terceiros Colocados</h3>';
     hmm += '<table class="tg" style="width:100%; max-width:700px; margin:0 auto; font-size:0.9em;">';
-    hmm += '<tr><th>#</th><th>Grupo</th><th>Seleção</th><th>Pts</th><th>SG</th><th>GP</th><th>Adversário de Momento (Fase 32)</th></tr>';
+    hmm += '<tr><th>#</th><th>Grupo</th><th>Seleção</th><th>J</th><th>Pts</th><th>SG</th><th>GP</th><th>Adversário de Momento (Fase 32)</th></tr>';
     
     if(thirds.length === 0) {
-        hmm += '<tr><td colspan="7" style="text-align:center;padding:20px;color:#888;">Nenhum grupo possui 3º colocado com jogos preenchidos.</td></tr>';
+        hmm += '<tr><td colspan="8" style="text-align:center;padding:20px;color:#888;">Nenhum grupo possui 3º colocado com jogos preenchidos.</td></tr>';
     } else {
         thirds.forEach((t, i) => {
             let rank = i + 1;
@@ -741,6 +738,7 @@ function updateTabela3os(gab) {
             hmm += '<td style="font-weight:bold;text-align:center;">' + rank + 'º</td>';
             hmm += '<td style="text-align:center;font-weight:bold;">' + t.gn + '</td>';
             hmm += '<td style="font-weight:bold;">' + t.n + '</td>';
+            hmm += '<td style="text-align:center;">' + t.j + '</td>';
             hmm += '<td style="text-align:center;font-weight:bold;">' + t.pts + '</td>';
             hmm += '<td style="text-align:center;">' + t.sd + '</td>';
             hmm += '<td style="text-align:center;">' + t.gp + '</td>';
@@ -1041,4 +1039,4 @@ function SP(){
 }
 
 BG();const sel=document.getElementById('psel');PN.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});RC();
-</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">25/06/2026 às 16:21</span></div></body></html>
+</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">Aguardando...</span></div></body></html>
