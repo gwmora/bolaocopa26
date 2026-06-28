@@ -150,7 +150,7 @@ function BG(){let h='',cg='';
 let saved={};try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
 GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}
 let xQ='',xR='',vQ='',vR='';
-const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 14:[0,3], 15:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 21:[2,1], 22:[3,1], 24:[1,1], 25:[0,1], 26:[0,1], 27:[3,0], 28:[0,3], 29:[4,2], 31:[4,1], 32:[2,0], 33:[0,1], 34:[2,0], 35:[3,2], 36:[0,0], 38:[7,1], 39:[1,0], 40:[2,1], 41:[0,0], 42:[2,1], 43:[0,2], 45:[2,2], 46:[5,1], 47:[5,1], 48:[0,4], 49:[1,1], 50:[1,3], 52:[2,2], 53:[1,1], 54:[0,0], 55:[1,3], 56:[1,1], 57:[1,5], 59:[0,0], 60:[1,1], 61:[4,0], 62:[2,2], 63:[0,0], 64:[0,1], 66:[3,1], 67:[1,4], 68:[3,0], 69:[3,2], 70:[1,4], 71:[5,0], 74:[3,0], 75:[3,1], 76:[2,0], 77:[1,2], 82:[1,1], 83:[1,3], 84:[5,0], 85:[1,0], 86:[0,0], 90:[4,2], 91:[1,0], 92:[0,0], 93:[0,1], 94:[0,2], 95:[2,1]};
+const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 24:[1,1], 25:[0,1], 26:[0,1], 27:[3,0], 31:[4,1], 32:[2,0], 33:[0,1], 34:[2,0], 38:[7,1], 39:[1,0], 40:[2,1], 41:[0,0], 45:[2,2], 46:[5,1], 47:[5,1], 48:[0,4], 52:[2,2], 53:[1,1], 54:[0,0], 59:[0,0], 60:[1,1], 61:[4,0], 66:[3,1], 67:[1,4], 74:[3,0], 75:[3,1], 82:[1,1], 83:[1,3], 90:[4,2], 91:[1,0]};
 if(HC[r]){
 vQ=' value=\"'+HC[r][0]+'\"';vR=' value=\"'+HC[r][1]+'\"';xQ=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';xR=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';
 }else if(saved[r]){
@@ -322,7 +322,7 @@ RC();
 
 }
 function unlockGabarito(){
-    const HC = [10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 56, 57, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 74, 75, 76, 77, 82, 83, 84, 85, 86, 90, 91, 92, 93, 94, 95];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 59, 60, 61, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g=>{
         const r=g[0];
         if(HC.includes(r)) return;
@@ -425,6 +425,89 @@ function IV(id){return(document.getElementById(id).value||'').trim();}
 function calcSt(gn,gab){const teams=GT[gn]||[],rows=GGM[gn]||[];const st={};teams.forEach(t=>{st[t]={pts:0,gp:0,gc:0,sd:0,j:0,n:t};});rows.forEach(r=>{const gs=gab.g[r]||['',''];if(gs[0]===''||gs[1]==='')return;const q=+gs[0],rv=+gs[1];if(isNaN(q)||isNaN(rv))return;const game=GM.find(g=>g[0]===r);if(!game)return;const t1=game[3],t2=game[4];if(!st[t1]||!st[t2])return;st[t1].j++;st[t2].j++;st[t1].gp+=q;st[t1].gc+=rv;st[t2].gp+=rv;st[t2].gc+=q;if(q>rv)st[t1].pts+=3;else if(q<rv)st[t2].pts+=3;else{st[t1].pts++;st[t2].pts++;}st[t1].sd=st[t1].gp-st[t1].gc;st[t2].sd=st[t2].gp-st[t2].gc;});return Object.values(st).sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));}
 function gF(gn,gab){return(GGM[gn]||[]).every(r=>{const gs=gab.g[r]||['',''];return gs[0]!==''&&gs[1]!=='';});}
 function norm(s){if(s===null||s===undefined)return"";return s.toString().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}function eq(a,b){var na=norm(a),nb=norm(b);if(na===""&&nb==="")return false;return na===nb;}
+
+
+// ===== CORREÇÃO DE PONTUAÇÃO — CLASSIFICADOS DA FASE DE 32 =====
+// Esta correção separa a pontuação de "seleção classificada para a Fase de 32"
+// da alocação na chave definida pela matriz FIFA. A matriz define o confronto;
+// a pontuação de classificado compara 1º/2º/3º previsto vs 1º/2º/3º real.
+function calcStFromScoreMap(gn, scoreMap){
+    const teams = GT[gn] || [];
+    const rows = GGM[gn] || [];
+    const st = {};
+    teams.forEach(t => { st[t] = {pts:0,gp:0,gc:0,sd:0,j:0,n:t}; });
+
+    rows.forEach(r => {
+        const gs = scoreMap ? (scoreMap[r] || scoreMap[String(r)] || ['','']) : ['',''];
+        if(gs[0] === '' || gs[1] === '' || gs[0] == null || gs[1] == null) return;
+        const q = +gs[0], rv = +gs[1];
+        if(isNaN(q) || isNaN(rv)) return;
+        const game = GM.find(g => g[0] === r);
+        if(!game) return;
+        const t1 = game[3], t2 = game[4];
+        if(!st[t1]) st[t1] = {pts:0,gp:0,gc:0,sd:0,j:0,n:t1};
+        if(!st[t2]) st[t2] = {pts:0,gp:0,gc:0,sd:0,j:0,n:t2};
+        st[t1].j++; st[t2].j++;
+        st[t1].gp += q; st[t1].gc += rv;
+        st[t2].gp += rv; st[t2].gc += q;
+        if(q > rv) st[t1].pts += 3;
+        else if(q < rv) st[t2].pts += 3;
+        else { st[t1].pts++; st[t2].pts++; }
+        st[t1].sd = st[t1].gp - st[t1].gc;
+        st[t2].sd = st[t2].gp - st[t2].gc;
+    });
+
+    return Object.values(st).sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
+}
+
+function getClassificadosF32FromScoreMap(scoreMap){
+    const qual = {};
+    const thirds = [];
+
+    GR.forEach(([gn]) => {
+        const st = calcStFromScoreMap(gn, scoreMap);
+        if(st.length >= 1) qual[norm(st[0].n)] = {name:st[0].n, pos:'1º', group:gn};
+        if(st.length >= 2) qual[norm(st[1].n)] = {name:st[1].n, pos:'2º', group:gn};
+        if(st.length >= 3) thirds.push({gn:gn, n:st[2].n, pts:st[2].pts, sd:st[2].sd, gp:st[2].gp, j:st[2].j});
+    });
+
+    thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
+    thirds.slice(0,8).forEach(t => {
+        qual[norm(t.n)] = {name:t.n, pos:'3º', group:t.gn};
+    });
+
+    return qual;
+}
+
+function pontuarClassificadosF32(pd, gab){
+    const real = getClassificadosF32FromScoreMap(gab.g || {});
+    const prev = getClassificadosF32FromScoreMap(pd.p || {});
+    let pts = 0;
+
+    Object.keys(prev).forEach(k => {
+        if(!real[k]) return;
+        pts += (real[k].pos === prev[k].pos) ? 10 : 5;
+    });
+
+    return pts;
+}
+
+function pontuarPlacarExatoF32(pd, gab){
+    let pts = 0;
+    const rule = mmRules.f32;
+    rule.ids.forEach(id => {
+        const gs = gab.mm ? gab.mm[id] : null;
+        const pp = pd.mm ? pd.mm[id] : null;
+        if(!gs || !pp) return;
+        if(eq(gs[0], pp[0]) && eq(gs[1], pp[1]) && gs[2] !== '' && gs[3] !== '') {
+            if(pp[2] !== '' && pp[3] !== '' && parseInt(pp[2]) === parseInt(gs[2]) && parseInt(pp[3]) === parseInt(gs[3])) {
+                pts += rule.pval;
+            }
+        }
+    });
+    return pts;
+}
+// ===== FIM DA CORREÇÃO DE PONTUAÇÃO =====
 function CP(name,gab){
 const pd=P[name];
 let f1=0,cl=0,f2=0,bn=0;
@@ -432,8 +515,16 @@ let f1=0,cl=0,f2=0,bn=0;
 // 1st Phase Points
 GM.forEach(g=>{const r=g[0],gs=gab.g[r]||['',''],pp=pd.p[r]||['',''];f1+=SG(pp[0],pp[1],gs[0],gs[1]);});
 
-// Mata-mata points with phase-wide tracking
-Object.values(mmRules).forEach(rule => {
+// Fase de 32: pontuação de classificados deve ser por posição de classificação (1º/2º/3º), não por slot da chave FIFA.
+f2 += pontuarClassificadosF32(pd, gab);
+
+// Fase de 32: bônus de placar exato continua restrito a confronto e ordem corretos.
+f2 += pontuarPlacarExatoF32(pd, gab);
+
+// Demais fases do mata-mata mantêm a lógica original por fase/chave.
+Object.keys(mmRules).forEach(key => {
+  if(key === 'f32') return;
+  const rule = mmRules[key];
   let realTeamsInPhase = [];
   rule.ids.forEach(id => {
     let gs = gab.mm ? gab.mm[id] : null;
@@ -447,17 +538,14 @@ Object.values(mmRules).forEach(rule => {
     let gs = gab.mm ? gab.mm[id] : null;
     let pp = pd.mm ? pd.mm[id] : null;
     if(pp) {
-       // Team 1
        if(pp[0] && pp[0] !== '') {
           if(gs && eq(gs[0], pp[0])) f2 += rule.val;
           else if(realTeamsInPhase.some(t=>eq(t, pp[0]))) f2 += (rule.val / 2);
        }
-       // Team 2
        if(pp[1] && pp[1] !== '') {
           if(gs && eq(gs[1], pp[1])) f2 += rule.val;
           else if(realTeamsInPhase.some(t=>eq(t, pp[1]))) f2 += (rule.val / 2);
        }
-       // Exact score bonus
        if(gs && eq(gs[0], pp[0]) && eq(gs[1], pp[1]) && gs[2] !== '' && gs[3] !== '') {
            if(pp[2] !== '' && pp[3] !== '' && parseInt(pp[2]) === parseInt(gs[2]) && parseInt(pp[3]) === parseInt(gs[3])) {
               f2 += rule.pval;
@@ -482,7 +570,7 @@ let LR=[];
 function buildGabSt(gab){let h='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Top 3 por Grupo e Piores Terceiros</h3><table class="tg" style="width:100%;margin-bottom:15px"><tr><th>Grupo</th><th>1\u00ba Colocado</th><th>2\u00ba Colocado</th><th>3\u00ba Colocado</th></tr>';let thirds=[];GR.forEach(([gn])=>{const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});}}});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4=thirds.length>8?thirds.slice(8).map(t=>t.n):[];GR.forEach(([gn])=>{let g1='-',g2='-',g3='-',g3c='';const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(worst4.includes(g3)){g3c='background:#ffebee;color:#c62828;font-weight:700';}else if(thirds.some(t=>t.n===g3)){g3c='background:#e8f5e9;color:#2e7d32;font-weight:700';}}}h+='<tr><td style="color:#1a472a;font-weight:700;text-align:center">Grupo '+gn+'</td><td style="text-align:center">'+g1+'</td><td style="text-align:center">'+g2+'</td><td style="text-align:center;'+g3c+'">'+g3+'</td></tr>';});h+='</table><p style="font-size:0.8em;color:#666">* Os 4 piores terceiros colocados s\u00e3o hachurados em vermelho e n\u00e3o se classificam. Os 8 melhores ficam em verde.</p></div>';document.getElementById('gg_st').innerHTML=h;} 
 function limparGabarito() {
     if(!confirm("Deseja limpar as simulações? Os jogos já realizados serão mantidos intactos.")) return;
-    const HC = [10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 56, 57, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 74, 75, 76, 77, 82, 83, 84, 85, 86, 90, 91, 92, 93, 94, 95];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 59, 60, 61, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g => {
         const r = g[0];
         if (!HC.includes(r)) {
@@ -1042,8 +1130,7 @@ function SP(){
 
 
 // ===== PATCH DINÂMICO NÃO INVASIVO — MATRIZ FIFA ANNEX C =====
-// Não altera o core do v64. A matriz oficial é carregada dinamicamente em formato estruturado
-// e aplicada depois da renderização normal, recalculando a alocação conforme os resultados do gabarito.
+// Carrega a matriz FIFA/Annex C em formato estruturado e aplica os terceiros da Fase de 32 conforme os resultados do gabarito.
 window.FIFA_ANNEX_C = window.FIFA_ANNEX_C || null;
 window.FIFA_ANNEX_C_READY = false;
 
@@ -1052,48 +1139,20 @@ const FIFA_ANNEX_C_URLS = [
   'https://github.com/FBains/WC2026_MonteCarlo/raw/refs/heads/main/annex_c.csv'
 ];
 
-const FIFA_WINNER_SLOT_TO_HTML_PLACEHOLDER = {
-  '1A':'3ºA_host',
-  '1B':'3ºB_host',
-  '1D':'3ºD_host',
-  '1E':'3ºE_host',
-  '1G':'3ºG_host',
-  '1I':'3ºI_host',
-  '1K':'3ºK_host',
-  '1L':'3ºL_host'
-};
-
-const FIFA_WINNER_SLOT_TO_MATCH = {
-  '1E':74,
-  '1I':77,
-  '1A':79,
-  '1L':80,
-  '1D':81,
-  '1G':82,
-  '1B':85,
-  '1K':87
-};
+const FIFA_WINNER_SLOT_TO_MATCH = {'1E':74,'1I':77,'1A':79,'1L':80,'1D':81,'1G':82,'1B':85,'1K':87};
 
 function __parseFifaAnnexCsv(txt) {
   const lines = String(txt || '').split(/\r?\n/).map(x => x.trim()).filter(Boolean);
   const out = {};
   const slots = ['1A','1B','1D','1E','1G','1I','1K','1L'];
-
   lines.forEach(line => {
     if (!line || /^1A[\s,;]+1B/.test(line) || /^#/.test(line)) return;
-
     let parts = line.includes(',') ? line.split(',').map(x => x.trim()) : line.split(/\s+/).map(x => x.trim());
     parts = parts.filter(Boolean);
-
-    // Aceita formatos:
-    // 3E,3J,3I,3F,3H,3G,3L,3K,EFGHIJKL
-    // ou com número de linha inicial: 2,3E,3J,...,EFGHIJKL
     if (/^\d+$/.test(parts[0])) parts = parts.slice(1);
     if (parts.length < 9) return;
-
     const combo = parts[8].replace(/[^A-L]/g,'');
     if (combo.length !== 8) return;
-
     const row = {};
     for (let i=0; i<8; i++) {
       let third = parts[i].replace(/[^A-L]/g,'');
@@ -1103,14 +1162,12 @@ function __parseFifaAnnexCsv(txt) {
     }
     out[combo] = row;
   });
-
   return Object.keys(out).length ? out : null;
 }
 
 function __loadFifaAnnexC() {
   if (window.FIFA_ANNEX_C_READY || window.__FIFA_ANNEX_C_LOADING) return;
   window.__FIFA_ANNEX_C_LOADING = true;
-
   let p = Promise.reject();
   FIFA_ANNEX_C_URLS.forEach(url => {
     p = p.catch(() => fetch(url, {cache:'no-store'}).then(r => {
@@ -1118,7 +1175,6 @@ function __loadFifaAnnexC() {
       return r.text();
     }));
   });
-
   p.then(txt => {
     const parsed = __parseFifaAnnexCsv(txt);
     if (parsed && Object.keys(parsed).length >= 495) {
@@ -1128,58 +1184,39 @@ function __loadFifaAnnexC() {
     } else {
       console.warn('Matriz FIFA Annex C não carregada ou incompleta. Linhas:', parsed ? Object.keys(parsed).length : 0);
     }
-  }).catch(e => {
-    console.warn('Falha ao carregar matriz FIFA Annex C dinâmica:', e);
-  }).finally(() => {
-    window.__FIFA_ANNEX_C_LOADING = false;
-  });
+  }).catch(e => console.warn('Falha ao carregar matriz FIFA Annex C dinâmica:', e))
+    .finally(() => { window.__FIFA_ANNEX_C_LOADING = false; });
 }
 
 function __getThirdsForFifa(gab) {
   const terceiros = [];
   const classificados = {};
-
   GR.forEach(([gn]) => {
     const st = calcSt(gn, gab);
     if (st && st.length >= 1) classificados['1º' + gn] = st[0].n;
     if (st && st.length >= 3) terceiros.push({gn:gn, n:st[2].n, pts:st[2].pts, sd:st[2].sd, gp:st[2].gp, j:st[2].j});
   });
-
   terceiros.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
   const best8 = terceiros.slice(0,8);
   const code = best8.map(x=>x.gn).sort().join('');
-
   return {terceiros, best8, code, classificados};
 }
 
 function __applyFifaAnnexCToUI(gab) {
   try {
     if (!window.FIFA_ANNEX_C_READY || !window.FIFA_ANNEX_C) return;
-
     const data = __getThirdsForFifa(gab);
     const row = window.FIFA_ANNEX_C[data.code];
-    if (!row) {
-      console.warn('Combinação não encontrada na matriz FIFA Annex C:', data.code);
-      return;
-    }
-
+    if (!row) { console.warn('Combinação não encontrada na matriz FIFA Annex C:', data.code); return; }
     const teamByThirdGroup = {};
     data.best8.forEach(x => { teamByThirdGroup[x.gn] = x.n; });
-
-    // 1) Atualiza a fase de 32 no gabarito, de forma dinâmica conforme a linha da matriz.
     Object.keys(row).forEach(winnerSlot => {
-      const thirdSlot = row[winnerSlot]; // ex.: 3D
-      const thirdGroup = thirdSlot.substring(1);
+      const thirdGroup = row[winnerSlot].substring(1);
       const team = teamByThirdGroup[thirdGroup];
       const matchId = FIFA_WINNER_SLOT_TO_MATCH[winnerSlot];
-      const placeholder = FIFA_WINNER_SLOT_TO_HTML_PLACEHOLDER[winnerSlot];
-      if (!team || !matchId || !placeholder) return;
-
-      const s1 = document.getElementById('mm_t1_' + matchId);
+      if (!team || !matchId) return;
       const s2 = document.getElementById('mm_t2_' + matchId);
-      if (!s1 || !s2) return;
-
-      // Os terceiros são sempre o segundo slot desses jogos no v64.
+      if (!s2) return;
       s2.value = team;
       s2.disabled = true;
       s2.style.background = '#f0f0f0';
@@ -1187,15 +1224,10 @@ function __applyFifaAnnexCToUI(gab) {
       s2.style.fontWeight = 'bold';
       s2.style.cursor = 'not-allowed';
     });
-
-    // 2) Atualiza a tabela de terceiros / adversário de momento.
     const thirdGroupToWinnerGroup = {};
     Object.keys(row).forEach(winnerSlot => {
-      const thirdGroup = row[winnerSlot].substring(1);
-      const winnerGroup = winnerSlot.substring(1);
-      thirdGroupToWinnerGroup[thirdGroup] = winnerGroup;
+      thirdGroupToWinnerGroup[row[winnerSlot].substring(1)] = winnerSlot.substring(1);
     });
-
     const table = document.querySelector('#tabela3os table');
     if (table) {
       const rows = table.querySelectorAll('tr');
@@ -1210,9 +1242,7 @@ function __applyFifaAnnexCToUI(gab) {
         cells[cells.length - 1].innerHTML = hostTeam ? ('<b>' + hostTeam + '</b>') : ('<i>1º do Gp. ' + winnerGroup + '</i>');
       });
     }
-  } catch(e) {
-    console.error('Erro ao aplicar matriz FIFA Annex C dinâmica:', e);
-  }
+  } catch(e) { console.error('Erro ao aplicar matriz FIFA Annex C dinâmica:', e); }
 }
 
 const __RC_ORIGINAL_FIFA_MATRIX = RC;
@@ -1234,4 +1264,4 @@ __loadFifaAnnexC();
 // ===== FIM DO PATCH DINÂMICO NÃO INVASIVO =====
 
 BG();const sel=document.getElementById('psel');PN.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});RC();
-</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">27/06/2026 às 22:36</span></div></body></html>
+</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">Aguardando...</span></div></body></html>
