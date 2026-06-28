@@ -150,7 +150,7 @@ function BG(){let h='',cg='';
 let saved={};try{saved=JSON.parse(localStorage.getItem('bolao_gabarito')||'{}');}catch(e){}
 GM.forEach(g=>{const[r,gr,dt,t1,t2]=g;if(gr!==cg){cg=gr;h+='<div class="gt">'+gr+'</div>';}
 let xQ='',xR='',vQ='',vR='';
-const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 14:[0,3], 15:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 21:[2,1], 22:[3,1], 24:[1,1], 25:[0,1], 26:[0,1], 27:[3,0], 28:[0,3], 29:[4,2], 31:[4,1], 32:[2,0], 33:[0,1], 34:[2,0], 35:[3,2], 36:[0,0], 38:[7,1], 39:[1,0], 40:[2,1], 41:[0,0], 42:[2,1], 43:[0,2], 45:[2,2], 46:[5,1], 47:[5,1], 48:[0,4], 49:[1,1], 50:[1,3], 52:[2,2], 53:[1,1], 54:[0,0], 55:[1,3], 56:[1,1], 57:[1,5], 59:[0,0], 60:[1,1], 61:[4,0], 62:[2,2], 63:[0,0], 64:[0,1], 66:[3,1], 67:[1,4], 68:[3,0], 69:[3,2], 70:[1,4], 71:[5,0], 74:[3,0], 75:[3,1], 76:[2,0], 77:[1,2], 82:[1,1], 83:[1,3], 84:[5,0], 85:[1,0], 90:[4,2], 91:[1,0], 92:[0,0], 93:[0,1]};
+const HC = {10:[2,0], 11:[2,1], 12:[1,1], 13:[1,0], 17:[1,1], 18:[1,1], 19:[4,1], 20:[6,0], 24:[1,1], 25:[0,1], 26:[0,1], 27:[3,0], 31:[4,1], 32:[2,0], 33:[0,1], 34:[2,0], 38:[7,1], 39:[1,0], 40:[2,1], 41:[0,0], 45:[2,2], 46:[5,1], 47:[5,1], 48:[0,4], 52:[2,2], 53:[1,1], 54:[0,0], 59:[0,0], 60:[1,1], 61:[4,0], 66:[3,1], 67:[1,4], 74:[3,0], 75:[3,1], 82:[1,1], 83:[1,3], 90:[4,2], 91:[1,0]};
 if(HC[r]){
 vQ=' value=\"'+HC[r][0]+'\"';vR=' value=\"'+HC[r][1]+'\"';xQ=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';xR=' readonly style=\"background:#e0e0e0;font-weight:700;color:#555\"';
 }else if(saved[r]){
@@ -322,7 +322,7 @@ RC();
 
 }
 function unlockGabarito(){
-    const HC = [10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 56, 57, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 74, 75, 76, 77, 82, 83, 84, 85, 90, 91, 92, 93];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 59, 60, 61, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g=>{
         const r=g[0];
         if(HC.includes(r)) return;
@@ -482,7 +482,7 @@ let LR=[];
 function buildGabSt(gab){let h='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Top 3 por Grupo e Piores Terceiros</h3><table class="tg" style="width:100%;margin-bottom:15px"><tr><th>Grupo</th><th>1\u00ba Colocado</th><th>2\u00ba Colocado</th><th>3\u00ba Colocado</th></tr>';let thirds=[];GR.forEach(([gn])=>{const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});}}});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4=thirds.length>8?thirds.slice(8).map(t=>t.n):[];GR.forEach(([gn])=>{let g1='-',g2='-',g3='-',g3c='';const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(worst4.includes(g3)){g3c='background:#ffebee;color:#c62828;font-weight:700';}else if(thirds.some(t=>t.n===g3)){g3c='background:#e8f5e9;color:#2e7d32;font-weight:700';}}}h+='<tr><td style="color:#1a472a;font-weight:700;text-align:center">Grupo '+gn+'</td><td style="text-align:center">'+g1+'</td><td style="text-align:center">'+g2+'</td><td style="text-align:center;'+g3c+'">'+g3+'</td></tr>';});h+='</table><p style="font-size:0.8em;color:#666">* Os 4 piores terceiros colocados s\u00e3o hachurados em vermelho e n\u00e3o se classificam. Os 8 melhores ficam em verde.</p></div>';document.getElementById('gg_st').innerHTML=h;} 
 function limparGabarito() {
     if(!confirm("Deseja limpar as simulações? Os jogos já realizados serão mantidos intactos.")) return;
-    const HC = [10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 56, 57, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 74, 75, 76, 77, 82, 83, 84, 85, 90, 91, 92, 93];
+    const HC = [10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31, 32, 33, 34, 38, 39, 40, 41, 45, 46, 47, 48, 52, 53, 54, 59, 60, 61, 66, 67, 74, 75, 82, 83, 90, 91];
     GM.forEach(g => {
         const r = g[0];
         if (!HC.includes(r)) {
@@ -1039,5 +1039,199 @@ function SP(){
     document.getElementById('pd').innerHTML=h;
 }
 
+
+
+// ===== PATCH DINÂMICO NÃO INVASIVO — MATRIZ FIFA ANNEX C =====
+// Não altera o core do v64. A matriz oficial é carregada dinamicamente em formato estruturado
+// e aplicada depois da renderização normal, recalculando a alocação conforme os resultados do gabarito.
+window.FIFA_ANNEX_C = window.FIFA_ANNEX_C || null;
+window.FIFA_ANNEX_C_READY = false;
+
+const FIFA_ANNEX_C_URLS = [
+  'https://raw.githubusercontent.com/FBains/WC2026_MonteCarlo/main/annex_c.csv',
+  'https://github.com/FBains/WC2026_MonteCarlo/raw/refs/heads/main/annex_c.csv'
+];
+
+const FIFA_WINNER_SLOT_TO_HTML_PLACEHOLDER = {
+  '1A':'3ºA_host',
+  '1B':'3ºB_host',
+  '1D':'3ºD_host',
+  '1E':'3ºE_host',
+  '1G':'3ºG_host',
+  '1I':'3ºI_host',
+  '1K':'3ºK_host',
+  '1L':'3ºL_host'
+};
+
+const FIFA_WINNER_SLOT_TO_MATCH = {
+  '1E':74,
+  '1I':77,
+  '1A':79,
+  '1L':80,
+  '1D':81,
+  '1G':82,
+  '1B':85,
+  '1K':87
+};
+
+function __parseFifaAnnexCsv(txt) {
+  const lines = String(txt || '').split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+  const out = {};
+  const slots = ['1A','1B','1D','1E','1G','1I','1K','1L'];
+
+  lines.forEach(line => {
+    if (!line || /^1A[\s,;]+1B/.test(line) || /^#/.test(line)) return;
+
+    let parts = line.includes(',') ? line.split(',').map(x => x.trim()) : line.split(/\s+/).map(x => x.trim());
+    parts = parts.filter(Boolean);
+
+    // Aceita formatos:
+    // 3E,3J,3I,3F,3H,3G,3L,3K,EFGHIJKL
+    // ou com número de linha inicial: 2,3E,3J,...,EFGHIJKL
+    if (/^\d+$/.test(parts[0])) parts = parts.slice(1);
+    if (parts.length < 9) return;
+
+    const combo = parts[8].replace(/[^A-L]/g,'');
+    if (combo.length !== 8) return;
+
+    const row = {};
+    for (let i=0; i<8; i++) {
+      let third = parts[i].replace(/[^A-L]/g,'');
+      if (third.length === 1) third = '3' + third;
+      if (!/^3[A-L]$/.test(third)) return;
+      row[slots[i]] = third;
+    }
+    out[combo] = row;
+  });
+
+  return Object.keys(out).length ? out : null;
+}
+
+function __loadFifaAnnexC() {
+  if (window.FIFA_ANNEX_C_READY || window.__FIFA_ANNEX_C_LOADING) return;
+  window.__FIFA_ANNEX_C_LOADING = true;
+
+  let p = Promise.reject();
+  FIFA_ANNEX_C_URLS.forEach(url => {
+    p = p.catch(() => fetch(url, {cache:'no-store'}).then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    }));
+  });
+
+  p.then(txt => {
+    const parsed = __parseFifaAnnexCsv(txt);
+    if (parsed && Object.keys(parsed).length >= 495) {
+      window.FIFA_ANNEX_C = parsed;
+      window.FIFA_ANNEX_C_READY = true;
+      setTimeout(() => { try { RC(); } catch(e) { console.error(e); } }, 0);
+    } else {
+      console.warn('Matriz FIFA Annex C não carregada ou incompleta. Linhas:', parsed ? Object.keys(parsed).length : 0);
+    }
+  }).catch(e => {
+    console.warn('Falha ao carregar matriz FIFA Annex C dinâmica:', e);
+  }).finally(() => {
+    window.__FIFA_ANNEX_C_LOADING = false;
+  });
+}
+
+function __getThirdsForFifa(gab) {
+  const terceiros = [];
+  const classificados = {};
+
+  GR.forEach(([gn]) => {
+    const st = calcSt(gn, gab);
+    if (st && st.length >= 1) classificados['1º' + gn] = st[0].n;
+    if (st && st.length >= 3) terceiros.push({gn:gn, n:st[2].n, pts:st[2].pts, sd:st[2].sd, gp:st[2].gp, j:st[2].j});
+  });
+
+  terceiros.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));
+  const best8 = terceiros.slice(0,8);
+  const code = best8.map(x=>x.gn).sort().join('');
+
+  return {terceiros, best8, code, classificados};
+}
+
+function __applyFifaAnnexCToUI(gab) {
+  try {
+    if (!window.FIFA_ANNEX_C_READY || !window.FIFA_ANNEX_C) return;
+
+    const data = __getThirdsForFifa(gab);
+    const row = window.FIFA_ANNEX_C[data.code];
+    if (!row) {
+      console.warn('Combinação não encontrada na matriz FIFA Annex C:', data.code);
+      return;
+    }
+
+    const teamByThirdGroup = {};
+    data.best8.forEach(x => { teamByThirdGroup[x.gn] = x.n; });
+
+    // 1) Atualiza a fase de 32 no gabarito, de forma dinâmica conforme a linha da matriz.
+    Object.keys(row).forEach(winnerSlot => {
+      const thirdSlot = row[winnerSlot]; // ex.: 3D
+      const thirdGroup = thirdSlot.substring(1);
+      const team = teamByThirdGroup[thirdGroup];
+      const matchId = FIFA_WINNER_SLOT_TO_MATCH[winnerSlot];
+      const placeholder = FIFA_WINNER_SLOT_TO_HTML_PLACEHOLDER[winnerSlot];
+      if (!team || !matchId || !placeholder) return;
+
+      const s1 = document.getElementById('mm_t1_' + matchId);
+      const s2 = document.getElementById('mm_t2_' + matchId);
+      if (!s1 || !s2) return;
+
+      // Os terceiros são sempre o segundo slot desses jogos no v64.
+      s2.value = team;
+      s2.disabled = true;
+      s2.style.background = '#f0f0f0';
+      s2.style.color = '#1a472a';
+      s2.style.fontWeight = 'bold';
+      s2.style.cursor = 'not-allowed';
+    });
+
+    // 2) Atualiza a tabela de terceiros / adversário de momento.
+    const thirdGroupToWinnerGroup = {};
+    Object.keys(row).forEach(winnerSlot => {
+      const thirdGroup = row[winnerSlot].substring(1);
+      const winnerGroup = winnerSlot.substring(1);
+      thirdGroupToWinnerGroup[thirdGroup] = winnerGroup;
+    });
+
+    const table = document.querySelector('#tabela3os table');
+    if (table) {
+      const rows = table.querySelectorAll('tr');
+      rows.forEach((tr, idx) => {
+        if (idx === 0) return;
+        const cells = tr.querySelectorAll('td');
+        if (!cells || cells.length < 8) return;
+        const grupo = (cells[1].textContent || '').trim();
+        const winnerGroup = thirdGroupToWinnerGroup[grupo];
+        if (!winnerGroup) return;
+        const hostTeam = data.classificados['1º' + winnerGroup];
+        cells[cells.length - 1].innerHTML = hostTeam ? ('<b>' + hostTeam + '</b>') : ('<i>1º do Gp. ' + winnerGroup + '</i>');
+      });
+    }
+  } catch(e) {
+    console.error('Erro ao aplicar matriz FIFA Annex C dinâmica:', e);
+  }
+}
+
+const __RC_ORIGINAL_FIFA_MATRIX = RC;
+RC = function() {
+  __RC_ORIGINAL_FIFA_MATRIX();
+  const gab = GV();
+  setTimeout(() => __applyFifaAnnexCToUI(gab), 0);
+};
+
+if (typeof updateTabela3os === 'function') {
+  const __UPDATE_TABELA3OS_ORIGINAL_FIFA_MATRIX = updateTabela3os;
+  updateTabela3os = function(gab) {
+    __UPDATE_TABELA3OS_ORIGINAL_FIFA_MATRIX(gab);
+    setTimeout(() => __applyFifaAnnexCToUI(gab), 0);
+  };
+}
+
+__loadFifaAnnexC();
+// ===== FIM DO PATCH DINÂMICO NÃO INVASIVO =====
+
 BG();const sel=document.getElementById('psel');PN.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});RC();
-</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">27/06/2026 às 17:17</span></div></body></html>
+</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">Aguardando...</span></div></body></html>
