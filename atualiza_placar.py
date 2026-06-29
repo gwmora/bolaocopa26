@@ -11,11 +11,11 @@ if not API_TOKEN:
     print("API_TOKEN não encontrado.")
     exit(1)
 
-# 2. Dicionário de tradução BLINDADO (Atualizado com a lista real da API)
+# [MANTENHA O SEU TEAM_MAP AQUI COMO ESTÁ NO SEU CÓDIGO ORIGINAL]
 TEAM_MAP = {
     "Mexico": "México", "South Africa": "África do Sul", "South Korea": "Coreia do Sul",
     "Czech Republic": "Tchéquia", "Czechia": "Tchéquia", "Canada": "Canadá",
-    "Bosnia and Herzegovina": "Bósnia", "Bosnia-Herzegovina": "Bósnia", "Bosnia": "Bósnia", # Bósnia corrigida
+    "Bosnia and Herzegovina": "Bósnia", "Bosnia-Herzegovina": "Bósnia", "Bosnia": "Bósnia",
     "Qatar": "Catar", "Switzerland": "Suíça", "Brazil": "Brasil", "Morocco": "Marrocos",
     "Haiti": "Haiti", "Scotland": "Escócia", "United States": "EUA", "USA": "EUA",
     "Paraguay": "Paraguai", "Australia": "Austrália", "Turkey": "Turquia",
@@ -25,7 +25,7 @@ TEAM_MAP = {
     "Iran": "Irã", "IR Iran": "Irã", "Islamic Republic of Iran": "Irã",
     "New Zealand": "Nova Zelândia", "Belgium": "Bélgica", "Egypt": "Egito",
     "Spain": "Espanha", "Saudi Arabia": "Arábia Saudita",
-    "Cape Verde": "Cabo Verde", "Cape Verde Islands": "Cabo Verde", # Cabo Verde corrigido
+    "Cape Verde": "Cabo Verde", "Cape Verde Islands": "Cabo Verde",
     "Uruguay": "Uruguai", "France": "França", "Senegal": "Senegal",
     "Iraq": "Iraque", "Norway": "Noruega", "Argentina": "Argentina",
     "Algeria": "Argélia", "Austria": "Áustria", "Jordan": "Jordânia",
@@ -43,10 +43,10 @@ html_path = 'index.html'
 with open(html_path, 'r', encoding='utf-8') as f:
     html = f.read()
 
-# 4. Entende as IDs dos jogos dinamicamente
+# 4. Entende as IDs dos jogos
 match_d = re.search(r'const D\s*=\s*(\{.*?\});', html, re.DOTALL)
 if not match_d:
-    print("Variável de dados não encontrada no HTML.")
+    print("Variável de dados não encontrada.")
     exit(1)
 
 D = json.loads(match_d.group(1))
@@ -58,19 +58,20 @@ for g in D['g']:
     games_map[f"{t1}x{t2}"] = id_jogo
     games_map[f"{t2}x{t1}"] = id_jogo
 
-# 5. Chama a API
-url = "https://api.football-data.org/v4/competitions/WC/matches"
+# 5. Chama a API com temporada definida
+# ADICIONEI: ?season=2026
+url = "https://api.football-data.org/v4/competitions/WC/matches?season=2026"
 headers = {"X-Auth-Token": API_TOKEN}
 response = requests.get(url, headers=headers)
 
 if response.status_code != 200:
-    print(f"Erro na API: {response.status_code}")
+    print(f"Erro na API: {response.status_code} - {response.text}")
     exit(1)
 
 data = response.json()
 matches = data.get('matches', [])
 
-# 6. Preserva os resultados existentes no HTML
+# 6. Preserva os resultados existentes
 novos_resultados = {}
 old_hc_match = re.search(r'const HC = (\{.*?\});', html)
 if old_hc_match:
@@ -78,12 +79,16 @@ if old_hc_match:
     antigos = json.loads(hc_str)
     novos_resultados = {int(k): v for k, v in antigos.items()}
 
-# 7. Injeta os resultados que terminaram
+# 7. Processa
 for m in matches:
+    home_en = m.get('homeTeam', {}).get('name')
+    away_en = m.get('awayTeam', {}).get('name')
+    
+    # IGNORA JOGOS SEM TIMES DEFINIDOS (Placeholders de mata-mata)
+    if not home_en or not away_en or "Winner" in home_en or "Winner" in away_en:
+        continue
+
     if m.get('status') == 'FINISHED':
-        home_en = m.get('homeTeam', {}).get('name')
-        away_en = m.get('awayTeam', {}).get('name')
-        
         score_home = m.get('score', {}).get('fullTime', {}).get('home')
         score_away = m.get('score', {}).get('fullTime', {}).get('away')
         
@@ -102,10 +107,9 @@ for m in matches:
             elif chave_inv in games_map:
                 novos_resultados[games_map[chave_inv]] = [score_away, score_home]
 
-# 8. Sobrescreve o HTML com os placares e a data atual
+# 8. Sobrescreve o HTML (mesma lógica)
 if novos_resultados:
     sorted_keys = sorted(novos_resultados.keys())
-    
     dict_items = [f"{k}:[{novos_resultados[k][0]},{novos_resultados[k][1]}]" for k in sorted_keys]
     dict_str = "const HC = {" + ", ".join(dict_items) + "};"
     arr_str = "const HC = [" + ", ".join(str(k) for k in sorted_keys) + "];"
@@ -118,6 +122,6 @@ if novos_resultados:
     
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html)
-    print(f"Sucesso! {len(novos_resultados)} jogos atualizados em {hora_atual}.")
+    print(f"Sucesso! {len(novos_resultados)} jogos atualizados.")
 else:
-    print("Nenhum resultado finalizado encontrado no momento.")
+    print("Nenhum resultado finalizado encontrado.")
