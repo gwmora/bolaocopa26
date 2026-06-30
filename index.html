@@ -177,6 +177,7 @@ const mmPhases = [
 ];
 
 let savedMM = {}; try{savedMM=JSON.parse(localStorage.getItem('bolao_gabarito_mm')||'{}');}catch(e){}
+const HC_MM = {73:['África do Sul','Canadá','0','1','','','','','locked'],74:['Alemanha','Paraguai','1','1','0','0','3','4','locked'],76:['Brasil','Japão','2','1','','','','','locked']};
 
 const mmDates = {73:'28/06', 74:'29/06', 75:'30/06', 76:'29/06', 77:'30/06', 78:'30/06', 79:'01/07', 80:'01/07', 81:'02/07', 82:'01/07', 83:'03/07', 84:'02/07', 85:'03/07', 86:'03/07', 87:'04/07', 88:'03/07', 89:'04/07', 90:'04/07', 91:'05/07', 92:'06/07', 93:'06/07', 94:'06/07', 95:'07/07', 96:'07/07', 97:'09/07', 98:'10/07', 99:'11/07', 100:'11/07', 101:'14/07', 102:'15/07', 103:'18/07', 104:'19/07'};
 const mmTimes = {73:'16h',74:'17h30',75:'22h',76:'14h',77:'18h',78:'14h',79:'22h',80:'13h',81:'21h',82:'17h',83:'20h',84:'16h',85:'00h',86:'19h',87:'22h30',88:'15h',89:'18h',90:'14h',91:'17h',92:'21h',93:'16h',94:'21h',95:'13h',96:'17h',97:'17h',98:'16h',99:'18h',100:'22h',101:'16h',102:'16h',103:'18h',104:'16h'};
@@ -212,6 +213,10 @@ mmPhases.forEach(ph => {
           pq=''; pr='';
       }
     }
+
+    if(HC_MM && HC_MM[id]){
+      t1=HC_MM[id][0]; t2=HC_MM[id][1]; q=HC_MM[id][2]; r=HC_MM[id][3]; qe=HC_MM[id][4]; re=HC_MM[id][5]; pq=HC_MM[id][6]; pr=HC_MM[id][7]; locked=(HC_MM[id][8]==='locked');
+    }
     
     let lStyle = 'font-weight:bold;color:#1a472a;background:#f0f0f0;cursor:not-allowed;';
     let dis = locked ? ' disabled style="'+lStyle+'"' : '';
@@ -243,6 +248,7 @@ mmPhases.forEach(ph => {
 document.getElementById('gg_mm').innerHTML = hmm;
 const HC_MM_SCORES={73:[0,1,'','',''],74:[1,1,0,0,3,4],76:[2,1,'','','']};
 Object.keys(HC_MM_SCORES).forEach(function(k){var v=HC_MM_SCORES[k];var q=document.getElementById('mm_q'+k),r=document.getElementById('mm_r'+k),qe=document.getElementById('mm_qe'+k),re=document.getElementById('mm_re'+k),pq=document.getElementById('mm_pq'+k),pr=document.getElementById('mm_pr'+k),ex=document.getElementById('mm_ext_'+k),pen=document.getElementById('mm_pen_'+k);if(q)q.value=v[0];if(r)r.value=v[1];if(qe)qe.value=v[2];if(re)re.value=v[3];if(pq)pq.value=v[4];if(pr)pr.value=v[5];if(ex&&q&&r&&q.value!==''&&r.value!==''&&q.value===r.value)ex.style.display='flex';if(pen&&qe&&re&&qe.value!==''&&re.value!==''&&qe.value===re.value)pen.style.display='flex';});
+setTimeout(function(){try{[73,74,76].forEach(function(id){if(typeof updateCascade==='function')updateCascade(id);});if(typeof RC==='function')RC();}catch(e){console.error(e);}},0);
 
 let optTeams = '<option value="">-- Selecione --</option>';
 allTeams.forEach(t => { optTeams += '<option value="'+t+'">'+t+'</option>'; });
