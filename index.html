@@ -760,7 +760,7 @@ function getGeneralRanksForArrows(rows){
 }
 function buildArrowBaselineGab(gab){
     const b=JSON.parse(JSON.stringify(gab));
-    const remove=[75,77,78,89,90];
+    const remove=[89,90];
     remove.forEach(id=>{if(!b.mm[id])b.mm[id]=['','','','','','','',''];for(let i=2;i<=7;i++)b.mm[id][i]='';});
     const nextPhases={89:[74,77],90:[73,75],91:[76,78],92:[79,80],93:[83,84],94:[81,82],95:[86,88],96:[85,87],97:[89,90],98:[93,94],99:[91,92],100:[95,96],101:[97,98],102:[99,100],103:[101,102,true],104:[101,102]};
     Object.keys(nextPhases).forEach(id=>{const p1=nextPhases[id][0],p2=nextPhases[id][1],useLoser=nextPhases[id][2];if(!b.mm[id])b.mm[id]=['','','','','','','',''];const w1=getMatchWinner(b,p1,useLoser);const w2=getMatchWinner(b,p2,useLoser);b.mm[id]=[w1,w2,'','','','','',''];});
