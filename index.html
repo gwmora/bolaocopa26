@@ -208,7 +208,8 @@ const HC_MM = {
   100:['Argentina','Suiça','1','1','2','0','','','locked'],
   101:['França','Espanha','0','2','','','','','locked'],
   102:['Inglaterra','Argentina','1','2','','','','','locked'],
-  103:['França','Inglaterra','4','6','','','','','locked']
+  103:['França','Inglaterra','4','6','','','','','locked'],
+  104:['Espanha','Argentina','0','0','1','0','','','locked']
 };
 
 const mmDates = {73:'28/06', 74:'29/06', 75:'30/06', 76:'29/06', 77:'30/06', 78:'30/06', 79:'01/07', 80:'01/07', 81:'02/07', 82:'01/07', 83:'03/07', 84:'02/07', 85:'03/07', 86:'03/07', 87:'04/07', 88:'03/07', 89:'04/07', 90:'04/07', 91:'05/07', 92:'06/07', 93:'06/07', 94:'06/07', 95:'07/07', 96:'07/07', 97:'09/07', 98:'10/07', 99:'11/07', 100:'11/07', 101:'14/07', 102:'15/07', 103:'18/07', 104:'19/07'};
@@ -300,27 +301,50 @@ let gArt = document.getElementById('g_art');
 if(gArt) gArt.innerHTML = optArt;
 
 
-let savedBonus={};try{savedBonus=JSON.parse(localStorage.getItem('bolao_bonus')||'{}');}catch(e){}
-['cam','vic','art','ga','atq','atq2','atq3','def','tg'].forEach(b=>{
-let el=document.getElementById('g_'+b);
-if(el&&savedBonus[b]){
-el.value=savedBonus[b].val;
-if(savedBonus[b].status==='locked'){
-  if(el.tagName==='SELECT'){el.disabled=true;el.style.background='#e0e0e0';el.style.fontWeight='700';el.style.color='#555';}
-  else{el.readOnly=true;el.style.background='#e0e0e0';el.style.fontWeight='700';el.style.color='#555';}
-}
-}
+// === HC_BONUS: valores oficiais finais (versao final da edicao) ===
+const HC_BONUS = {
+  cam:  'Espanha',
+  vic:  'Argentina',
+  art:  'Kylian Mbappé',
+  ga:   '10',
+  atq:  'França',
+  atq2: 'Inglaterra',
+  atq3: '',
+  def:  'Espanha',
+  tg:   '308'
+};
+// Force values and lock every bonus field (versao final)
+['cam','vic','art','ga','atq','atq2','atq3','def','tg'].forEach(function(b){
+  var el=document.getElementById('g_'+b);
+  if(!el) return;
+  var v = (HC_BONUS[b] !== undefined) ? HC_BONUS[b] : '';
+  el.value = v;
+  if(el.tagName==='SELECT'){ el.disabled=true; }
+  else { el.readOnly=true; }
+  el.style.background='#e0e0e0';
+  el.style.fontWeight='700';
+  el.style.color='#555';
 });
-// Reveal extra Melhor Ataque rows if there are saved values (or a checkbox flag)
-['atq2','atq3'].forEach(function(k){
-  var sel=document.getElementById('g_'+k);
-  var cb=document.getElementById('g_atq_add'+k.slice(-1));
-  var row=document.getElementById('g_atq_row'+k.slice(-1));
-  if(sel && sel.value && sel.value!==''){
-    if(row) row.style.display='';
-    if(cb) cb.checked=true;
-  }
-});
+// Reveal extra Melhor Ataque row (atq2 = Inglaterra), and disable the checkboxes so it can't be toggled
+(function(){
+  var row2=document.getElementById('g_atq_row2');
+  var cb2 =document.getElementById('g_atq_add2');
+  var row3=document.getElementById('g_atq_row3');
+  var cb3 =document.getElementById('g_atq_add3');
+  if(HC_BONUS.atq2 && HC_BONUS.atq2!==''){ if(row2) row2.style.display=''; if(cb2){ cb2.checked=true; } }
+  if(HC_BONUS.atq3 && HC_BONUS.atq3!==''){ if(row3) row3.style.display=''; if(cb3){ cb3.checked=true; } }
+  if(cb2) cb2.disabled=true;
+  if(cb3) cb3.disabled=true;
+})();
+// Persist as locked in localStorage for consistency across sessions
+try{
+  var _sb={};
+  ['cam','vic','art','ga','atq','atq2','atq3','def','tg'].forEach(function(b){
+    var v = (HC_BONUS[b] !== undefined) ? HC_BONUS[b] : '';
+    if(v !== '') _sb[b]={val:v, status:'locked'};
+  });
+  localStorage.setItem('bolao_bonus', JSON.stringify(_sb));
+}catch(e){}
 }
 function saveGabarito(){
 let saved={};
@@ -379,7 +403,7 @@ RC();
 
 }
 function unlockGabarito(){
-    const HC = [10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 56, 57, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87, 90, 91, 92, 93, 94, 95];
+    const HC = [10,11,12,13,14,15,17,18,19,20,21,22,24,25,26,27,28,29,31,32,33,34,35,36,38,39,40,41,42,43,45,46,47,48,49,50,52,53,54,55,56,57,59,60,61,62,63,64,66,67,68,69,70,71,74,75,76,77,78,79,82,83,84,85,86,87,90,91,92,93,94,95];
     GM.forEach(g=>{
         const r=g[0];
         if(HC.includes(r)) return;
@@ -401,7 +425,7 @@ let savedMM={}; try{savedMM=JSON.parse(localStorage.getItem('bolao_gabarito_mm')
     });
     localStorage.setItem('bolao_gabarito',JSON.stringify(saved));
 
-    const HC_MM_LOCKED=[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103];
+    const HC_MM_LOCKED=[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104];
     [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104].forEach(id=>{
         if(HC_MM_LOCKED.includes(id)) return;
         const q = document.getElementById('mm_q'+id);
@@ -535,7 +559,7 @@ let LR=[];
 function buildGabSt(gab){let h='<div class="pb"><h3 class="st">\uD83C\uDFDF\uFE0F Top 3 por Grupo e Piores Terceiros</h3><table class="tg" style="width:100%;margin-bottom:15px"><tr><th>Grupo</th><th>1\u00ba Colocado</th><th>2\u00ba Colocado</th><th>3\u00ba Colocado</th></tr>';let thirds=[];GR.forEach(([gn])=>{const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){thirds.push({gn:gn,n:st[2].n,pts:st[2].pts,sd:st[2].sd,gp:st[2].gp});}}});thirds.sort((a,b)=>b.pts-a.pts||b.sd-a.sd||b.gp-a.gp||a.n.localeCompare(b.n));const worst4=thirds.length>8?thirds.slice(8).map(t=>t.n):[];GR.forEach(([gn])=>{let g1='-',g2='-',g3='-',g3c='';const st=calcSt(gn,gab);if(st.length>=3){const pts=st.reduce((sum,t)=>sum+t.pts,0);if(pts>0){g1=st[0].n;g2=st[1].n;g3=st[2].n;if(worst4.includes(g3)){g3c='background:#ffebee;color:#c62828;font-weight:700';}else if(thirds.some(t=>t.n===g3)){g3c='background:#e8f5e9;color:#2e7d32;font-weight:700';}}}h+='<tr><td style="color:#1a472a;font-weight:700;text-align:center">Grupo '+gn+'</td><td style="text-align:center">'+g1+'</td><td style="text-align:center">'+g2+'</td><td style="text-align:center;'+g3c+'">'+g3+'</td></tr>';});h+='</table><p style="font-size:0.8em;color:#666">* Os 4 piores terceiros colocados s\u00e3o hachurados em vermelho e n\u00e3o se classificam. Os 8 melhores ficam em verde.</p></div>';document.getElementById('gg_st').innerHTML=h;} 
 function limparGabarito() {
     if(!confirm("Deseja limpar as simulações? Os jogos já realizados serão mantidos intactos.")) return;
-    const HC = [10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 56, 57, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87, 90, 91, 92, 93, 94, 95];
+    const HC = [10,11,12,13,14,15,17,18,19,20,21,22,24,25,26,27,28,29,31,32,33,34,35,36,38,39,40,41,42,43,45,46,47,48,49,50,52,53,54,55,56,57,59,60,61,62,63,64,66,67,68,69,70,71,74,75,76,77,78,79,82,83,84,85,86,87,90,91,92,93,94,95];
     GM.forEach(g => {
         const r = g[0];
         if (!HC.includes(r)) {
@@ -1115,4 +1139,4 @@ window.FIFA_ANNEX_C=window.FIFA_ANNEX_C||null;window.FIFA_ANNEX_C_READY=false;co
 // ===== FIM MATRIZ FIFA ANNEX C =====
 
 window.__bolaoInitialBaselineActive=true;BG();const sel=document.getElementById('psel');PN.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});RC();
-</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">19/07/2026 às 19:48</span></div></body></html>
+</script><div style="text-align:center; padding:20px; font-size:0.7em; color:#888;">Última atualização: <span id="last-update">Aguardando...</span></div></body></html>
